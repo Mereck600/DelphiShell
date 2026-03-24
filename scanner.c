@@ -38,8 +38,7 @@ void add_to_buf(char c)
 
 //function takes a string and converts it to a structure. 
 //It takes care of allocating memory for the token's structure and text, and fills in the structure's member fields.
-struct token_s *create_token(char *str)
-{
+struct token_s *create_token(char *str){
     struct token_s *tok = malloc(sizeof(struct token_s));
     
     if(!tok)
