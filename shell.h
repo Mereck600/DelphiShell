@@ -20,6 +20,7 @@ int  parse_and_execute(struct source_s *src);
 
 /* shell builtin utilities */
 int dump(int argc, char **argv);
+int delphi(int argc, char **argv);
 
 /* struct for builtin utilities */
 struct builtin_s

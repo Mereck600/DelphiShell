@@ -1,0 +1,7 @@
+{"text": "User: list files\nAction: {\"mode\":\"shell\",\"command\":\"ls\"}"}
+{"text": "User: show current directory\nAction: {\"mode\":\"shell\",\"command\":\"pwd\"}"}
+{"text": "User: make directory src\nAction: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "User: create a file named notes.txt\nAction: {\"mode\":\"write_file\",\"path\":\"notes.txt\",\"content\":\"\"}"}
+{"text": "User: make hello.py that prints hi\nAction: {\"mode\":\"write_file\",\"path\":\"hello.py\",\"content\":\"print('hi')\"}"}
+{"text": "User: run hello.py\nAction: {\"mode\":\"run_file\",\"command\":\"python3 hello.py\"}"}
+{"text": "User: compile main.c\nAction: {\"mode\":\"shell\",\"command\":\"gcc -o main main.c\"}"}

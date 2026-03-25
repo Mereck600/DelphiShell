@@ -4,6 +4,9 @@
 
 extern char **environ;
 
+// This function initializes the symbol table stack (including the global symbol table) and scans the environment list, 
+// adding each environment variable (and its value) to the table. 
+// Lastly, the function adds two variables that we'll use to store our prompt strings, PS1 and PS2
 void initsh(void)
 {
     init_symtab();

@@ -6,6 +6,8 @@
 #include "source.h"
 #include "parser.h"
 #include "executor.h"
+#include "delphi_mode.h"
+int run_delphi_input(const char *input);
 
 
 //Main.c is the REPL (Read, Eavluate, Print, loop).
@@ -41,11 +43,17 @@ int main(int argc, char **argv){
 			}
 		
 		// printf("%s\n", cmd);
-        struct source_s src;
-        src.buffer   = cmd;
-        src.bufsize  = strlen(cmd);
-        src.curpos   = INIT_SRC_POS;
-        parse_and_execute(&src);
+        //Normal shell should wtill work here and command delphi goes through builtin
+        if (is_delphi_mode() && strncmp(cmd, "delphi", 6) != 0) {
+            run_delphi_input(cmd);
+        } else {
+            struct source_s src;
+            src.buffer   = cmd;
+            src.bufsize  = strlen(cmd);
+            src.curpos   = INIT_SRC_POS;
+            parse_and_execute(&src);
+        }
+
 		
 		free(cmd);
 

@@ -155,10 +155,12 @@ int do_simple_command(struct node_s *node)
     argv[argc] = NULL;
 
     //check user cmd witrh builtins list 
-    int i = 0;
-    for( ; i < builtins_count; i++)
+    //int i = 0;
+   printf("builtins_count=%d\n", builtins_count);
+    for (int i = 0; i < builtins_count; i++)
     {
-        if(strcmp(argv[0], builtins[i].name) == 0)
+        printf("builtin[%d]='%s'\n", i, builtins[i].name);
+        if (strcmp(argv[0], builtins[i].name) == 0)
         {
             builtins[i].func(argc, argv);
             free_argv(argc, argv);

@@ -1,0 +1,7 @@
+shell
+*.o
+__pycache__/
+*.pyc
+.venv/
+delphi/model/
+delphi/data/*.tmp

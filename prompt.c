@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "shell.h"
 #include "symtab/symtab.h"
+#include "delphi_mode.h"
 //TODO: implement the print_prompt2 function it should be simmilar to p_p1
 
 /*
@@ -11,10 +12,15 @@
 
 //  checks if there is a symbol table entry with the name PS1. 
 //  If there is, we use that entry's value to print the first prompt string.
-//   Otherwise, we use our default builtin value, which is $
+//   Otherwise, we use our default builtin value, which is $, also we add user conf for delphi mode
+
 void print_prompt1(void)
-{   
+{
     struct symtab_entry_s *entry = get_symtab_entry("PS1");
+
+    if (is_delphi_mode()) {
+        fprintf(stderr, "[DELPHI] ");
+    }
 
     if(entry && entry->val)
     {
