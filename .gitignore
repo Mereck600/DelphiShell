@@ -5,3 +5,4 @@ __pycache__/
 .venv/
 delphi/model/
 delphi/data/*.tmp
+.vscode/

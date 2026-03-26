@@ -1,28 +1,17 @@
 # DelphiShell
 AI integrated shell for interacting with DelphiOS
+This is the shell component of DelphiOS an local AI integrated operating system.
 
-to run 
-```
-gcc -o shell executor.c initsh.c main.c node.c parser.c prompt.c scanner.c source.c builtins/builtins.c builtins/dump.c symtab/symtab.c
+Notes: 
+- Developing in linux, however using the makefile in the windows section it should still work. 
+- Transformer architecture is running on CPU will add GPU compatibility soon. 
 
-```
 
-Run with delphi 
-
-python requirements
+## To run and compile:
 ```bash
-pip install torch transformers datasets
+git clone https://github.com/Mereck600/DelphiShell.git
 ```
-Note: this right now is for cpu only, I will be working on detecting gpu and using if available.
 
-```bash
-gcc -o shell \
-  main.c prompt.c parser.c scanner.c source.c node.c executor.c initsh.c \
-  delphi_mode.c delphi_bridge.c \
-  symtab/symtab.c \
-  builtins/builtins.c builtins/dump.c builtins/delphi.c
-```
-or simply run
 ```bash
 make deps
 make
@@ -30,7 +19,20 @@ make train
 make run
 ```
 
-Example delphi current output
+## Example Delphi Usage: 
+
+
+Example delphi current input
+```bash 
+delphi
+```
+running this command will switch the shell into delphi mode and pass whatever plain text is recieved into the model
+For example:
+```bash
+list files in the current directory
+```
+
+Example output:
 
 ```
 {"mode":"shell","command":"ls -la"}
@@ -39,6 +41,15 @@ Example delphi current output
 {"mode":"answer","text":"I could not safely interpret that request."}
 
 ```
+
+
+Here is what I have currently to run the model alone:
+
+```bash
+.venv/bin/python delphi/infer_delphi.py "list files"
+{"mode":"shell","command":"ls"}
+```
+
 
 Next Steps:
 Practical limitations
@@ -57,4 +68,3 @@ overwriting files
 recursive moves
 package install
 
-That will feel much more stable than giving the model unrestricted shell access.
