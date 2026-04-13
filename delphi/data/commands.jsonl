@@ -1,7 +1,400 @@
-{"text": "User: list files\nAction: {\"mode\":\"shell\",\"command\":\"ls\"}"}
-{"text": "User: show current directory\nAction: {\"mode\":\"shell\",\"command\":\"pwd\"}"}
-{"text": "User: make directory src\nAction: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
-{"text": "User: create a file named notes.txt\nAction: {\"mode\":\"write_file\",\"path\":\"notes.txt\",\"content\":\"\"}"}
-{"text": "User: make hello.py that prints hi\nAction: {\"mode\":\"write_file\",\"path\":\"hello.py\",\"content\":\"print('hi')\"}"}
-{"text": "User: run hello.py\nAction: {\"mode\":\"run_file\",\"command\":\"python3 hello.py\"}"}
-{"text": "User: compile main.c\nAction: {\"mode\":\"shell\",\"command\":\"gcc -o main main.c\"}"}
+{"text": "Instruction: list files\nJSON: {\"mode\":\"shell\",\"command\":\"ls\"}"}
+{"text": "Instruction: show files\nJSON: {\"mode\":\"shell\",\"command\":\"ls\"}"}
+{"text": "Instruction: display files\nJSON: {\"mode\":\"shell\",\"command\":\"ls\"}"}
+{"text": "Instruction: show directory contents\nJSON: {\"mode\":\"shell\",\"command\":\"ls\"}"}
+{"text": "Instruction: show current directory\nJSON: {\"mode\":\"shell\",\"command\":\"pwd\"}"}
+{"text": "Instruction: print working directory\nJSON: {\"mode\":\"shell\",\"command\":\"pwd\"}"}
+{"text": "Instruction: where am i\nJSON: {\"mode\":\"shell\",\"command\":\"pwd\"}"}
+{"text": "Instruction: what folder am i in\nJSON: {\"mode\":\"shell\",\"command\":\"pwd\"}"}
+{"text": "Instruction: list all files with details\nJSON: {\"mode\":\"shell\",\"command\":\"ls -la\"}"}
+{"text": "Instruction: show hidden files with details\nJSON: {\"mode\":\"shell\",\"command\":\"ls -la\"}"}
+{"text": "Instruction: display long directory listing\nJSON: {\"mode\":\"shell\",\"command\":\"ls -la\"}"}
+{"text": "Instruction: find files within two levels\nJSON: {\"mode\":\"shell\",\"command\":\"find . -maxdepth 2 -type f\"}"}
+{"text": "Instruction: show files up to depth two\nJSON: {\"mode\":\"shell\",\"command\":\"find . -maxdepth 2 -type f\"}"}
+{"text": "Instruction: list files in current folder and subfolders to depth two\nJSON: {\"mode\":\"shell\",\"command\":\"find . -maxdepth 2 -type f\"}"}
+{"text": "Instruction: show folder size\nJSON: {\"mode\":\"shell\",\"command\":\"du -sh .\"}"}
+{"text": "Instruction: display current directory size\nJSON: {\"mode\":\"shell\",\"command\":\"du -sh .\"}"}
+{"text": "Instruction: check how big this directory is\nJSON: {\"mode\":\"shell\",\"command\":\"du -sh .\"}"}
+{"text": "Instruction: show git status\nJSON: {\"mode\":\"shell\",\"command\":\"git status\"}"}
+{"text": "Instruction: check repository status\nJSON: {\"mode\":\"shell\",\"command\":\"git status\"}"}
+{"text": "Instruction: what changed in git\nJSON: {\"mode\":\"shell\",\"command\":\"git status\"}"}
+{"text": "Instruction: show the last five commits\nJSON: {\"mode\":\"shell\",\"command\":\"git log --oneline -5\"}"}
+{"text": "Instruction: display recent git commits\nJSON: {\"mode\":\"shell\",\"command\":\"git log --oneline -5\"}"}
+{"text": "Instruction: list five recent commits\nJSON: {\"mode\":\"shell\",\"command\":\"git log --oneline -5\"}"}
+{"text": "Instruction: show running processes\nJSON: {\"mode\":\"shell\",\"command\":\"ps aux\"}"}
+{"text": "Instruction: list active processes\nJSON: {\"mode\":\"shell\",\"command\":\"ps aux\"}"}
+{"text": "Instruction: display all processes\nJSON: {\"mode\":\"shell\",\"command\":\"ps aux\"}"}
+{"text": "Instruction: show environment variables\nJSON: {\"mode\":\"shell\",\"command\":\"env\"}"}
+{"text": "Instruction: print environment variables\nJSON: {\"mode\":\"shell\",\"command\":\"env\"}"}
+{"text": "Instruction: display environment variables\nJSON: {\"mode\":\"shell\",\"command\":\"env\"}"}
+{"text": "Instruction: show the date\nJSON: {\"mode\":\"shell\",\"command\":\"date\"}"}
+{"text": "Instruction: print current date\nJSON: {\"mode\":\"shell\",\"command\":\"date\"}"}
+{"text": "Instruction: what time is it\nJSON: {\"mode\":\"shell\",\"command\":\"date\"}"}
+{"text": "Instruction: show current user\nJSON: {\"mode\":\"shell\",\"command\":\"whoami\"}"}
+{"text": "Instruction: who am i\nJSON: {\"mode\":\"shell\",\"command\":\"whoami\"}"}
+{"text": "Instruction: print my username\nJSON: {\"mode\":\"shell\",\"command\":\"whoami\"}"}
+{"text": "Instruction: show python version\nJSON: {\"mode\":\"shell\",\"command\":\"python3 --version\"}"}
+{"text": "Instruction: print python version\nJSON: {\"mode\":\"shell\",\"command\":\"python3 --version\"}"}
+{"text": "Instruction: check installed python version\nJSON: {\"mode\":\"shell\",\"command\":\"python3 --version\"}"}
+{"text": "Instruction: show node version\nJSON: {\"mode\":\"shell\",\"command\":\"node --version\"}"}
+{"text": "Instruction: print node version\nJSON: {\"mode\":\"shell\",\"command\":\"node --version\"}"}
+{"text": "Instruction: check node version\nJSON: {\"mode\":\"shell\",\"command\":\"node --version\"}"}
+{"text": "Instruction: show npm version\nJSON: {\"mode\":\"shell\",\"command\":\"npm --version\"}"}
+{"text": "Instruction: print npm version\nJSON: {\"mode\":\"shell\",\"command\":\"npm --version\"}"}
+{"text": "Instruction: check npm version\nJSON: {\"mode\":\"shell\",\"command\":\"npm --version\"}"}
+{"text": "Instruction: show gcc version\nJSON: {\"mode\":\"shell\",\"command\":\"gcc --version\"}"}
+{"text": "Instruction: print gcc version\nJSON: {\"mode\":\"shell\",\"command\":\"gcc --version\"}"}
+{"text": "Instruction: check c compiler version\nJSON: {\"mode\":\"shell\",\"command\":\"gcc --version\"}"}
+{"text": "Instruction: show cargo version\nJSON: {\"mode\":\"shell\",\"command\":\"cargo --version\"}"}
+{"text": "Instruction: print cargo version\nJSON: {\"mode\":\"shell\",\"command\":\"cargo --version\"}"}
+{"text": "Instruction: check cargo version\nJSON: {\"mode\":\"shell\",\"command\":\"cargo --version\"}"}
+{"text": "Instruction: run the python tests\nJSON: {\"mode\":\"shell\",\"command\":\"python3 -m pytest\"}"}
+{"text": "Instruction: execute pytest\nJSON: {\"mode\":\"shell\",\"command\":\"python3 -m pytest\"}"}
+{"text": "Instruction: run all tests with pytest\nJSON: {\"mode\":\"shell\",\"command\":\"python3 -m pytest\"}"}
+{"text": "Instruction: run npm tests\nJSON: {\"mode\":\"shell\",\"command\":\"npm test\"}"}
+{"text": "Instruction: execute javascript tests\nJSON: {\"mode\":\"shell\",\"command\":\"npm test\"}"}
+{"text": "Instruction: run the test script\nJSON: {\"mode\":\"shell\",\"command\":\"npm test\"}"}
+{"text": "Instruction: run make test\nJSON: {\"mode\":\"shell\",\"command\":\"make test\"}"}
+{"text": "Instruction: execute the makefile tests\nJSON: {\"mode\":\"shell\",\"command\":\"make test\"}"}
+{"text": "Instruction: start tests with make\nJSON: {\"mode\":\"shell\",\"command\":\"make test\"}"}
+{"text": "Instruction: start a local web server on port 8000\nJSON: {\"mode\":\"shell\",\"command\":\"python3 -m http.server 8000\"}"}
+{"text": "Instruction: serve the current directory on port 8000\nJSON: {\"mode\":\"shell\",\"command\":\"python3 -m http.server 8000\"}"}
+{"text": "Instruction: run a simple http server on 8000\nJSON: {\"mode\":\"shell\",\"command\":\"python3 -m http.server 8000\"}"}
+{"text": "Instruction: make a directory named src\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: make src directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: make a folder named src\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: make src folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: create a directory named src\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: create src directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: create a folder named src\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: create src folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: add a directory named src\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: add src directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: add a folder named src\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: add src folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: generate a directory named src\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: generate src directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: generate a folder named src\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: generate src folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src\"}"}
+{"text": "Instruction: make a directory named tests\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: make tests directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: make a folder named tests\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: make tests folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: create a directory named tests\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: create tests directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: create a folder named tests\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: create tests folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: add a directory named tests\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: add tests directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: add a folder named tests\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: add tests folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: generate a directory named tests\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: generate tests directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: generate a folder named tests\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: generate tests folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests\"}"}
+{"text": "Instruction: make a directory named docs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: make docs directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: make a folder named docs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: make docs folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: create a directory named docs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: create docs directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: create a folder named docs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: create docs folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: add a directory named docs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: add docs directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: add a folder named docs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: add docs folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: generate a directory named docs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: generate docs directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: generate a folder named docs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: generate docs folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs\"}"}
+{"text": "Instruction: make a directory named scripts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: make scripts directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: make a folder named scripts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: make scripts folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: create a directory named scripts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: create scripts directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: create a folder named scripts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: create scripts folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: add a directory named scripts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: add scripts directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: add a folder named scripts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: add scripts folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: generate a directory named scripts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: generate scripts directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: generate a folder named scripts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: generate scripts folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p scripts\"}"}
+{"text": "Instruction: make a directory named build\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: make build directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: make a folder named build\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: make build folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: create a directory named build\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: create build directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: create a folder named build\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: create build folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: add a directory named build\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: add build directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: add a folder named build\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: add build folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: generate a directory named build\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: generate build directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: generate a folder named build\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: generate build folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p build\"}"}
+{"text": "Instruction: make a directory named dist\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: make dist directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: make a folder named dist\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: make dist folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: create a directory named dist\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: create dist directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: create a folder named dist\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: create dist folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: add a directory named dist\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: add dist directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: add a folder named dist\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: add dist folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: generate a directory named dist\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: generate dist directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: generate a folder named dist\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: generate dist folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p dist\"}"}
+{"text": "Instruction: make a directory named assets\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: make assets directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: make a folder named assets\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: make assets folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: create a directory named assets\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: create assets directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: create a folder named assets\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: create assets folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: add a directory named assets\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: add assets directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: add a folder named assets\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: add assets folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: generate a directory named assets\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: generate assets directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: generate a folder named assets\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: generate assets folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets\"}"}
+{"text": "Instruction: make a directory named logs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: make logs directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: make a folder named logs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: make logs folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: create a directory named logs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: create logs directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: create a folder named logs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: create logs folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: add a directory named logs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: add logs directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: add a folder named logs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: add logs folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: generate a directory named logs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: generate logs directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: generate a folder named logs\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: generate logs folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs\"}"}
+{"text": "Instruction: make a directory named tmp\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: make tmp directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: make a folder named tmp\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: make tmp folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: create a directory named tmp\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: create tmp directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: create a folder named tmp\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: create tmp folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: add a directory named tmp\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: add tmp directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: add a folder named tmp\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: add tmp folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: generate a directory named tmp\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: generate tmp directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: generate a folder named tmp\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: generate tmp folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp\"}"}
+{"text": "Instruction: make a directory named data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: make data directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: make a folder named data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: make data folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: create a directory named data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: create data directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: create a folder named data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: create data folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: add a directory named data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: add data directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: add a folder named data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: add data folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: generate a directory named data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: generate data directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: generate a folder named data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: generate data folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p data\"}"}
+{"text": "Instruction: make a directory named config\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: make config directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: make a folder named config\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: make config folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: create a directory named config\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: create config directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: create a folder named config\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: create config folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: add a directory named config\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: add config directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: add a folder named config\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: add config folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: generate a directory named config\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: generate config directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: generate a folder named config\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: generate config folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p config\"}"}
+{"text": "Instruction: make a directory named examples\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: make examples directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: make a folder named examples\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: make examples folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: create a directory named examples\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: create examples directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: create a folder named examples\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: create examples folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: add a directory named examples\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: add examples directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: add a folder named examples\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: add examples folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: generate a directory named examples\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: generate examples directory\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: generate a folder named examples\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: generate examples folder\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p examples\"}"}
+{"text": "Instruction: create the directory src/components\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src/components\"}"}
+{"text": "Instruction: make folder src/components\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src/components\"}"}
+{"text": "Instruction: create the directory src/utils\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src/utils\"}"}
+{"text": "Instruction: make folder src/utils\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src/utils\"}"}
+{"text": "Instruction: create the directory src/data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src/data\"}"}
+{"text": "Instruction: make folder src/data\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p src/data\"}"}
+{"text": "Instruction: create the directory tests/unit\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests/unit\"}"}
+{"text": "Instruction: make folder tests/unit\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests/unit\"}"}
+{"text": "Instruction: create the directory tests/integration\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests/integration\"}"}
+{"text": "Instruction: make folder tests/integration\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tests/integration\"}"}
+{"text": "Instruction: create the directory docs/api\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs/api\"}"}
+{"text": "Instruction: make folder docs/api\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p docs/api\"}"}
+{"text": "Instruction: create the directory logs/archive\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs/archive\"}"}
+{"text": "Instruction: make folder logs/archive\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p logs/archive\"}"}
+{"text": "Instruction: create the directory assets/images\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets/images\"}"}
+{"text": "Instruction: make folder assets/images\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets/images\"}"}
+{"text": "Instruction: create the directory assets/styles\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets/styles\"}"}
+{"text": "Instruction: make folder assets/styles\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p assets/styles\"}"}
+{"text": "Instruction: create the directory tmp/cache\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp/cache\"}"}
+{"text": "Instruction: make folder tmp/cache\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p tmp/cache\"}"}
+{"text": "Instruction: move to project folder and go into all subfolders and create a subfolder archive\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"project\\\" -type d -exec mkdir -p \\\"{}/archive\\\" \\\\;\"}"}
+{"text": "Instruction: go into all subfolders in project and create a subfolder named archive\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"project\\\" -type d -exec mkdir -p \\\"{}/archive\\\" \\\\;\"}"}
+{"text": "Instruction: create a subfolder named archive inside every folder in project\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"project\\\" -type d -exec mkdir -p \\\"{}/archive\\\" \\\\;\"}"}
+{"text": "Instruction: add a subfolder called archive to every subfolder in project\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"project\\\" -type d -exec mkdir -p \\\"{}/archive\\\" \\\\;\"}"}
+{"text": "Instruction: move to src folder and go into all subfolders and create a subfolder generated\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"src\\\" -type d -exec mkdir -p \\\"{}/generated\\\" \\\\;\"}"}
+{"text": "Instruction: go into all subfolders in src and create a subfolder named generated\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"src\\\" -type d -exec mkdir -p \\\"{}/generated\\\" \\\\;\"}"}
+{"text": "Instruction: create a subfolder named generated inside every folder in src\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"src\\\" -type d -exec mkdir -p \\\"{}/generated\\\" \\\\;\"}"}
+{"text": "Instruction: add a subfolder called generated to every subfolder in src\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"src\\\" -type d -exec mkdir -p \\\"{}/generated\\\" \\\\;\"}"}
+{"text": "Instruction: move to docs folder and go into all subfolders and create a subfolder drafts\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"docs\\\" -type d -exec mkdir -p \\\"{}/drafts\\\" \\\\;\"}"}
+{"text": "Instruction: go into all subfolders in docs and create a subfolder named drafts\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"docs\\\" -type d -exec mkdir -p \\\"{}/drafts\\\" \\\\;\"}"}
+{"text": "Instruction: create a subfolder named drafts inside every folder in docs\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"docs\\\" -type d -exec mkdir -p \\\"{}/drafts\\\" \\\\;\"}"}
+{"text": "Instruction: add a subfolder called drafts to every subfolder in docs\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"docs\\\" -type d -exec mkdir -p \\\"{}/drafts\\\" \\\\;\"}"}
+{"text": "Instruction: move to assets folder and go into all subfolders and create a subfolder thumbnails\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"assets\\\" -type d -exec mkdir -p \\\"{}/thumbnails\\\" \\\\;\"}"}
+{"text": "Instruction: go into all subfolders in assets and create a subfolder named thumbnails\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"assets\\\" -type d -exec mkdir -p \\\"{}/thumbnails\\\" \\\\;\"}"}
+{"text": "Instruction: create a subfolder named thumbnails inside every folder in assets\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"assets\\\" -type d -exec mkdir -p \\\"{}/thumbnails\\\" \\\\;\"}"}
+{"text": "Instruction: add a subfolder called thumbnails to every subfolder in assets\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"assets\\\" -type d -exec mkdir -p \\\"{}/thumbnails\\\" \\\\;\"}"}
+{"text": "Instruction: move to clients folder and go into all subfolders and create a subfolder reports\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"clients\\\" -type d -exec mkdir -p \\\"{}/reports\\\" \\\\;\"}"}
+{"text": "Instruction: go into all subfolders in clients and create a subfolder named reports\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"clients\\\" -type d -exec mkdir -p \\\"{}/reports\\\" \\\\;\"}"}
+{"text": "Instruction: create a subfolder named reports inside every folder in clients\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"clients\\\" -type d -exec mkdir -p \\\"{}/reports\\\" \\\\;\"}"}
+{"text": "Instruction: add a subfolder called reports to every subfolder in clients\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"clients\\\" -type d -exec mkdir -p \\\"{}/reports\\\" \\\\;\"}"}
+{"text": "Instruction: move to workspace folder and go into all subfolders and create a subfolder backup\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"workspace\\\" -type d -exec mkdir -p \\\"{}/backup\\\" \\\\;\"}"}
+{"text": "Instruction: go into all subfolders in workspace and create a subfolder named backup\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"workspace\\\" -type d -exec mkdir -p \\\"{}/backup\\\" \\\\;\"}"}
+{"text": "Instruction: create a subfolder named backup inside every folder in workspace\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"workspace\\\" -type d -exec mkdir -p \\\"{}/backup\\\" \\\\;\"}"}
+{"text": "Instruction: add a subfolder called backup to every subfolder in workspace\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"workspace\\\" -type d -exec mkdir -p \\\"{}/backup\\\" \\\\;\"}"}
+{"text": "Instruction: move to photos folder and go into all subfolders and create a subfolder edited\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"photos\\\" -type d -exec mkdir -p \\\"{}/edited\\\" \\\\;\"}"}
+{"text": "Instruction: go into all subfolders in photos and create a subfolder named edited\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"photos\\\" -type d -exec mkdir -p \\\"{}/edited\\\" \\\\;\"}"}
+{"text": "Instruction: create a subfolder named edited inside every folder in photos\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"photos\\\" -type d -exec mkdir -p \\\"{}/edited\\\" \\\\;\"}"}
+{"text": "Instruction: add a subfolder called edited to every subfolder in photos\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"photos\\\" -type d -exec mkdir -p \\\"{}/edited\\\" \\\\;\"}"}
+{"text": "Instruction: move to tests folder and go into all subfolders and create a subfolder fixtures\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"tests\\\" -type d -exec mkdir -p \\\"{}/fixtures\\\" \\\\;\"}"}
+{"text": "Instruction: go into all subfolders in tests and create a subfolder named fixtures\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"tests\\\" -type d -exec mkdir -p \\\"{}/fixtures\\\" \\\\;\"}"}
+{"text": "Instruction: create a subfolder named fixtures inside every folder in tests\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"tests\\\" -type d -exec mkdir -p \\\"{}/fixtures\\\" \\\\;\"}"}
+{"text": "Instruction: add a subfolder called fixtures to every subfolder in tests\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"tests\\\" -type d -exec mkdir -p \\\"{}/fixtures\\\" \\\\;\"}"}
+{"text": "Instruction: create a file named notes.txt\nJSON: {\"mode\":\"write_file\",\"path\":\"notes.txt\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called notes.txt\nJSON: {\"mode\":\"write_file\",\"path\":\"notes.txt\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named todo.txt\nJSON: {\"mode\":\"write_file\",\"path\":\"todo.txt\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called todo.txt\nJSON: {\"mode\":\"write_file\",\"path\":\"todo.txt\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named README.md\nJSON: {\"mode\":\"write_file\",\"path\":\"README.md\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called README.md\nJSON: {\"mode\":\"write_file\",\"path\":\"README.md\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named config.json\nJSON: {\"mode\":\"write_file\",\"path\":\"config.json\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called config.json\nJSON: {\"mode\":\"write_file\",\"path\":\"config.json\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named main.py\nJSON: {\"mode\":\"write_file\",\"path\":\"main.py\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called main.py\nJSON: {\"mode\":\"write_file\",\"path\":\"main.py\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named app.js\nJSON: {\"mode\":\"write_file\",\"path\":\"app.js\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called app.js\nJSON: {\"mode\":\"write_file\",\"path\":\"app.js\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named index.html\nJSON: {\"mode\":\"write_file\",\"path\":\"index.html\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called index.html\nJSON: {\"mode\":\"write_file\",\"path\":\"index.html\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named style.css\nJSON: {\"mode\":\"write_file\",\"path\":\"style.css\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called style.css\nJSON: {\"mode\":\"write_file\",\"path\":\"style.css\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named script.sh\nJSON: {\"mode\":\"write_file\",\"path\":\"script.sh\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called script.sh\nJSON: {\"mode\":\"write_file\",\"path\":\"script.sh\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named Dockerfile\nJSON: {\"mode\":\"write_file\",\"path\":\"Dockerfile\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called Dockerfile\nJSON: {\"mode\":\"write_file\",\"path\":\"Dockerfile\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named .gitignore\nJSON: {\"mode\":\"write_file\",\"path\":\".gitignore\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called .gitignore\nJSON: {\"mode\":\"write_file\",\"path\":\".gitignore\",\"content\":\"\"}"}
+{"text": "Instruction: create a file named requirements.txt\nJSON: {\"mode\":\"write_file\",\"path\":\"requirements.txt\",\"content\":\"\"}"}
+{"text": "Instruction: make an empty file called requirements.txt\nJSON: {\"mode\":\"write_file\",\"path\":\"requirements.txt\",\"content\":\"\"}"}
+{"text": "Instruction: make hello.py that prints hello world\nJSON: {\"mode\":\"write_file\",\"path\":\"hello.py\",\"content\":\"print('hello world')\\n\"}"}
+{"text": "Instruction: create hello.py with a hello world print\nJSON: {\"mode\":\"write_file\",\"path\":\"hello.py\",\"content\":\"print('hello world')\\n\"}"}
+{"text": "Instruction: write a python hello world file named hello.py\nJSON: {\"mode\":\"write_file\",\"path\":\"hello.py\",\"content\":\"print('hello world')\\n\"}"}
+{"text": "Instruction: create main.py that prints hi\nJSON: {\"mode\":\"write_file\",\"path\":\"main.py\",\"content\":\"def main():\\n    print('hi')\\n\\n\\nif __name__ == '__main__':\\n    main()\\n\"}"}
+{"text": "Instruction: make a python entry file named main.py that prints hi\nJSON: {\"mode\":\"write_file\",\"path\":\"main.py\",\"content\":\"def main():\\n    print('hi')\\n\\n\\nif __name__ == '__main__':\\n    main()\\n\"}"}
+{"text": "Instruction: write main.py with a main function that prints hi\nJSON: {\"mode\":\"write_file\",\"path\":\"main.py\",\"content\":\"def main():\\n    print('hi')\\n\\n\\nif __name__ == '__main__':\\n    main()\\n\"}"}
+{"text": "Instruction: create app.js that logs hello from node\nJSON: {\"mode\":\"write_file\",\"path\":\"app.js\",\"content\":\"console.log('hello from node');\\n\"}"}
+{"text": "Instruction: make app.js printing hello from node\nJSON: {\"mode\":\"write_file\",\"path\":\"app.js\",\"content\":\"console.log('hello from node');\\n\"}"}
+{"text": "Instruction: write a javascript file app.js that logs a greeting\nJSON: {\"mode\":\"write_file\",\"path\":\"app.js\",\"content\":\"console.log('hello from node');\\n\"}"}
+{"text": "Instruction: create index.html with a hello heading\nJSON: {\"mode\":\"write_file\",\"path\":\"index.html\",\"content\":\"<!doctype html>\\n<html>\\n<head><title>Home</title></head>\\n<body><h1>Hello</h1></body>\\n</html>\\n\"}"}
+{"text": "Instruction: make a basic html page called index.html\nJSON: {\"mode\":\"write_file\",\"path\":\"index.html\",\"content\":\"<!doctype html>\\n<html>\\n<head><title>Home</title></head>\\n<body><h1>Hello</h1></body>\\n</html>\\n\"}"}
+{"text": "Instruction: write index.html with a simple hello page\nJSON: {\"mode\":\"write_file\",\"path\":\"index.html\",\"content\":\"<!doctype html>\\n<html>\\n<head><title>Home</title></head>\\n<body><h1>Hello</h1></body>\\n</html>\\n\"}"}
+{"text": "Instruction: create style.css with a basic body rule\nJSON: {\"mode\":\"write_file\",\"path\":\"style.css\",\"content\":\"body {\\n    font-family: sans-serif;\\n    margin: 0;\\n}\\n\"}"}
+{"text": "Instruction: make a stylesheet named style.css\nJSON: {\"mode\":\"write_file\",\"path\":\"style.css\",\"content\":\"body {\\n    font-family: sans-serif;\\n    margin: 0;\\n}\\n\"}"}
+{"text": "Instruction: write style.css with simple body styles\nJSON: {\"mode\":\"write_file\",\"path\":\"style.css\",\"content\":\"body {\\n    font-family: sans-serif;\\n    margin: 0;\\n}\\n\"}"}
+{"text": "Instruction: create script.sh that echoes hello\nJSON: {\"mode\":\"write_file\",\"path\":\"script.sh\",\"content\":\"#!/bin/sh\\necho \\\"hello\\\"\\n\"}"}
+{"text": "Instruction: make a shell script named script.sh that prints hello\nJSON: {\"mode\":\"write_file\",\"path\":\"script.sh\",\"content\":\"#!/bin/sh\\necho \\\"hello\\\"\\n\"}"}
+{"text": "Instruction: write script.sh with a hello echo\nJSON: {\"mode\":\"write_file\",\"path\":\"script.sh\",\"content\":\"#!/bin/sh\\necho \\\"hello\\\"\\n\"}"}
+{"text": "Instruction: create a readme file\nJSON: {\"mode\":\"write_file\",\"path\":\"README.md\",\"content\":\"# Project\\n\\nA small starter project.\\n\"}"}
+{"text": "Instruction: make README.md for a small starter project\nJSON: {\"mode\":\"write_file\",\"path\":\"README.md\",\"content\":\"# Project\\n\\nA small starter project.\\n\"}"}
+{"text": "Instruction: write README.md with a short project heading\nJSON: {\"mode\":\"write_file\",\"path\":\"README.md\",\"content\":\"# Project\\n\\nA small starter project.\\n\"}"}
+{"text": "Instruction: create config.json with debug enabled and port 3000\nJSON: {\"mode\":\"write_file\",\"path\":\"config.json\",\"content\":\"{\\n  \\\"debug\\\": true,\\n  \\\"port\\\": 3000\\n}\\n\"}"}
+{"text": "Instruction: make a config file with debug true\nJSON: {\"mode\":\"write_file\",\"path\":\"config.json\",\"content\":\"{\\n  \\\"debug\\\": true,\\n  \\\"port\\\": 3000\\n}\\n\"}"}
+{"text": "Instruction: write config.json for port 3000\nJSON: {\"mode\":\"write_file\",\"path\":\"config.json\",\"content\":\"{\\n  \\\"debug\\\": true,\\n  \\\"port\\\": 3000\\n}\\n\"}"}
+{"text": "Instruction: run main.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 main.py\"}"}
+{"text": "Instruction: execute main.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 main.py\"}"}
+{"text": "Instruction: start the python file main.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 main.py\"}"}
+{"text": "Instruction: run hello.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 hello.py\"}"}
+{"text": "Instruction: execute hello.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 hello.py\"}"}
+{"text": "Instruction: start the python file hello.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 hello.py\"}"}
+{"text": "Instruction: run app.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 app.py\"}"}
+{"text": "Instruction: execute app.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 app.py\"}"}
+{"text": "Instruction: start the python file app.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 app.py\"}"}
+{"text": "Instruction: run server.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 server.py\"}"}
+{"text": "Instruction: execute server.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 server.py\"}"}
+{"text": "Instruction: start the python file server.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 server.py\"}"}
+{"text": "Instruction: run manage.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 manage.py\"}"}
+{"text": "Instruction: execute manage.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 manage.py\"}"}
+{"text": "Instruction: start the python file manage.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 manage.py\"}"}
+{"text": "Instruction: run tool.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 tool.py\"}"}
+{"text": "Instruction: execute tool.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 tool.py\"}"}
+{"text": "Instruction: start the python file tool.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 tool.py\"}"}
+{"text": "Instruction: run app.js\nJSON: {\"mode\":\"run_file\",\"command\":\"node app.js\"}"}
+{"text": "Instruction: execute app.js with node\nJSON: {\"mode\":\"run_file\",\"command\":\"node app.js\"}"}
+{"text": "Instruction: run server.js\nJSON: {\"mode\":\"run_file\",\"command\":\"node server.js\"}"}
+{"text": "Instruction: execute server.js with node\nJSON: {\"mode\":\"run_file\",\"command\":\"node server.js\"}"}
+{"text": "Instruction: run index.js\nJSON: {\"mode\":\"run_file\",\"command\":\"node index.js\"}"}
+{"text": "Instruction: execute index.js with node\nJSON: {\"mode\":\"run_file\",\"command\":\"node index.js\"}"}
+{"text": "Instruction: run cli.js\nJSON: {\"mode\":\"run_file\",\"command\":\"node cli.js\"}"}
+{"text": "Instruction: execute cli.js with node\nJSON: {\"mode\":\"run_file\",\"command\":\"node cli.js\"}"}
+{"text": "Instruction: run worker.js\nJSON: {\"mode\":\"run_file\",\"command\":\"node worker.js\"}"}
+{"text": "Instruction: execute worker.js with node\nJSON: {\"mode\":\"run_file\",\"command\":\"node worker.js\"}"}
+{"text": "Instruction: compile main.c\nJSON: {\"mode\":\"shell\",\"command\":\"gcc -o main main.c\"}"}
+{"text": "Instruction: use gcc to compile main.c\nJSON: {\"mode\":\"shell\",\"command\":\"gcc -o main main.c\"}"}
+{"text": "Instruction: compile program.c\nJSON: {\"mode\":\"shell\",\"command\":\"gcc -o program program.c\"}"}
+{"text": "Instruction: use gcc to compile program.c\nJSON: {\"mode\":\"shell\",\"command\":\"gcc -o program program.c\"}"}
+{"text": "Instruction: build tool.c\nJSON: {\"mode\":\"shell\",\"command\":\"gcc -o tool tool.c\"}"}
+{"text": "Instruction: use gcc to compile tool.c\nJSON: {\"mode\":\"shell\",\"command\":\"gcc -o tool tool.c\"}"}
+{"text": "Instruction: compile app.c into an executable\nJSON: {\"mode\":\"shell\",\"command\":\"gcc -o app app.c\"}"}
+{"text": "Instruction: use gcc to compile app.c\nJSON: {\"mode\":\"shell\",\"command\":\"gcc -o app app.c\"}"}
+{"text": "Instruction: tell me a joke\nJSON: {\"mode\":\"answer\",\"text\":\"I can help with shell-style actions, file creation, and running files.\"}"}
+{"text": "Instruction: please tell me a joke\nJSON: {\"mode\":\"answer\",\"text\":\"I can help with shell-style actions, file creation, and running files.\"}"}
+{"text": "Instruction: what is the meaning of life\nJSON: {\"mode\":\"answer\",\"text\":\"I can help map requests into shell commands or simple file actions.\"}"}
+{"text": "Instruction: please what is the meaning of life\nJSON: {\"mode\":\"answer\",\"text\":\"I can help map requests into shell commands or simple file actions.\"}"}
+{"text": "Instruction: who won the world series\nJSON: {\"mode\":\"answer\",\"text\":\"I am trained for local command actions and cannot answer that confidently.\"}"}
+{"text": "Instruction: please who won the world series\nJSON: {\"mode\":\"answer\",\"text\":\"I am trained for local command actions and cannot answer that confidently.\"}"}
+{"text": "Instruction: write me a poem\nJSON: {\"mode\":\"answer\",\"text\":\"I am focused on command execution and simple project scaffolding tasks.\"}"}
+{"text": "Instruction: please write me a poem\nJSON: {\"mode\":\"answer\",\"text\":\"I am focused on command execution and simple project scaffolding tasks.\"}"}
+{"text": "Instruction: explain quantum mechanics\nJSON: {\"mode\":\"answer\",\"text\":\"I can help with terminal tasks, but I cannot answer that confidently here.\"}"}
+{"text": "Instruction: please explain quantum mechanics\nJSON: {\"mode\":\"answer\",\"text\":\"I can help with terminal tasks, but I cannot answer that confidently here.\"}"}

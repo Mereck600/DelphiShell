@@ -1,15 +1,22 @@
 import os
 import sys
 import json
+import re
 from pathlib import Path
-
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 import torch
 from transformers import GPT2LMHeadModel, GPT2TokenizerFast
 
 ROOT = Path(__file__).resolve().parent
 MODEL_DIR = ROOT / "model"
+
+
+def build_recursive_subfolder_command(base_folder: str, subfolder_name: str) -> str:
+    # Builds a shell command that creates the same child folder inside every
+    # directory under the requested base folder.
+    base = base_folder.strip().strip("\"'")
+    child = subfolder_name.strip().strip("\"'")
+    return f'find "{base}" -type d -exec mkdir -p "{{}}/{child}" \\;'
 
 
 def safe_fallback(user_text: str) -> dict:
@@ -47,6 +54,27 @@ def safe_fallback(user_text: str) -> dict:
         filename = text.replace("make a file called ", "", 1).strip()
         if filename:
             return {"mode": "write_file", "path": filename, "content": ""}
+
+    recursive_subfolder_patterns = [
+        r"move to (.+?) folder and go into all subfolders and create a subfolder (.+)",
+        r"go into all subfolders in (.+?) and create a subfolder named (.+)",
+        r"create a subfolder named (.+) inside every folder in (.+)",
+        r"add a subfolder called (.+) to every subfolder in (.+)",
+    ]
+    for pattern in recursive_subfolder_patterns:
+        match = re.fullmatch(pattern, text)
+        if not match:
+            continue
+
+        if "inside every folder in" in pattern or "add a subfolder called" in pattern:
+            child, base = match.groups()
+        else:
+            base, child = match.groups()
+
+        return {
+            "mode": "shell",
+            "command": build_recursive_subfolder_command(base, child),
+        }
 
     return {
         "mode": "answer",
@@ -147,14 +175,16 @@ def generate_action(user_text: str) -> dict:
         return safe_fallback(user_text)
 
     try:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         tokenizer = GPT2TokenizerFast.from_pretrained(str(MODEL_DIR))
         model = GPT2LMHeadModel.from_pretrained(str(MODEL_DIR))
         model.eval()
-        model.to(torch.device("cpu"))
+        model.to(device)
 
         prompt = f"Instruction: {user_text}\nJSON: "
 
         inputs = tokenizer(prompt, return_tensors="pt")
+        inputs = {key: value.to(device) for key, value in inputs.items()}
 
         with torch.no_grad():
             output = model.generate(

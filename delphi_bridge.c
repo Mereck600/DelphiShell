@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,18 +48,28 @@ int run_delphi_input(const char *input)
 {
     if (!input) return 1;
 
-    char escaped[2048];
+    char cleaned[2048];
+    size_t in_len = strlen(input);
+    if (in_len >= sizeof(cleaned)) {
+        in_len = sizeof(cleaned) - 1;
+    }
+
+    memcpy(cleaned, input, in_len);
+    cleaned[in_len] = '\0';
+    trim_newline(cleaned);
+
+    char escaped[4096];
     size_t j = 0;
 
-    for (size_t i = 0; input[i] != '\0' && j < sizeof(escaped) - 2; i++) {
-        if (input[i] == '"' || input[i] == '\\') {
+    for (size_t i = 0; cleaned[i] != '\0' && j < sizeof(escaped) - 2; i++) {
+        if (cleaned[i] == '"' || cleaned[i] == '\\') {
             escaped[j++] = '\\';
         }
-        escaped[j++] = input[i];
+        escaped[j++] = cleaned[i];
     }
     escaped[j] = '\0';
 
-    char cmd[4096];
+    char cmd[8192];
     snprintf(cmd, sizeof(cmd),
              DELPHI_PYTHON " delphi/infer_delphi.py \"%s\"",
              escaped);
@@ -76,10 +87,9 @@ int run_delphi_input(const char *input)
     response[total] = '\0';
 
     int status = pclose(fp);
-    (void)status;
+    fprintf(stderr, "[Delphi exit] %d\n", status);
 
     trim_newline(response);
-
     fprintf(stderr, "[Delphi raw] %s\n", response);
 
     if (response[0] == '\0') {
@@ -101,7 +111,6 @@ int run_delphi_input(const char *input)
 
     if (strcmp(mode, "answer") == 0) {
         char text[4096] = {0};
-
         if (!extract_json_value(response, "text", text, sizeof(text))) {
             fprintf(stderr, "Delphi: missing text in answer response\n");
             return 1;
@@ -113,7 +122,6 @@ int run_delphi_input(const char *input)
 
     if (strcmp(mode, "shell") == 0) {
         char shell_cmd[4096] = {0};
-
         if (!extract_json_value(response, "command", shell_cmd, sizeof(shell_cmd))) {
             fprintf(stderr, "Delphi: missing command for shell action\n");
             return 1;
@@ -125,7 +133,6 @@ int run_delphi_input(const char *input)
 
     if (strcmp(mode, "run_file") == 0) {
         char run_cmd[4096] = {0};
-
         if (!extract_json_value(response, "command", run_cmd, sizeof(run_cmd))) {
             fprintf(stderr, "Delphi: missing command for run_file action\n");
             return 1;

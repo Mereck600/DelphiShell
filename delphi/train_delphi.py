@@ -3,8 +3,6 @@ import json
 import shutil
 from pathlib import Path
 
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
-
 import torch
 from datasets import Dataset
 from transformers import (
@@ -15,46 +13,55 @@ from transformers import (
     TrainingArguments,
     DataCollatorForLanguageModeling,
 )
+from build_dataset import main as build_dataset
 
 ROOT = Path(__file__).resolve().parent
-DATA_PATH = ROOT / "data" / "commands.jsonl"
+DATA_JSON_PATH = ROOT / "data" / "command_dataset.json"
 MODEL_DIR = ROOT / "model"
 
 
-def load_jsonl(path: Path):
-    # Loads line-delimited JSON training rows from disk into a Python list.
-    rows = []
+def load_dataset_rows(path: Path):
+    # Loads the generated JSON dataset and returns the language-model training rows.
     with open(path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                rows.append(json.loads(line))
+        payload = json.load(f)
+
+    records = payload.get("records", [])
+    rows = [{"text": row["text"]} for row in records if row.get("text")]
     return rows
 
 
 def main():
-    # Builds a small GPT-2 style model, trains it on the command dataset, and
-    # saves both the model weights and tokenizer for local inference.
-    print("Using device: cpu")
+    # Rebuilds the dataset, trains a small GPT-2 style model, and saves both
+    # the model weights and tokenizer for local inference.
+    print(torch.__version__)
+    print(torch.version.cuda)
+    print(torch.cuda.is_available())
+    print(torch.cuda.device_count())
+    use_cuda = torch.cuda.is_available()
+    device = torch.device("cuda" if use_cuda else "cpu")
+
+
+    print(f"Using device: {device}")
+    build_dataset()
 
     tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
     tokenizer.pad_token = tokenizer.eos_token
 
     config = GPT2Config(
         vocab_size=tokenizer.vocab_size,
-        n_positions=128,
-        n_ctx=128,
+        n_positions=192,
+        n_ctx=192,
         n_embd=128,
         n_layer=4,
         n_head=4,
     )
 
     model = GPT2LMHeadModel(config)
-    model.to(torch.device("cpu"))
+    model.to(device)
 
-    rows = load_jsonl(DATA_PATH)
+    rows = load_dataset_rows(DATA_JSON_PATH)
     if not rows:
-        raise ValueError(f"No training data found in {DATA_PATH}")
+        raise ValueError(f"No training data found in {DATA_JSON_PATH}")
 
     dataset = Dataset.from_list(rows)
 
@@ -64,7 +71,7 @@ def main():
             examples["text"],
             truncation=True,
             padding="max_length",
-            max_length=128,
+            max_length=192,
         )
 
     tokenized = dataset.map(tokenize_fn, batched=True, remove_columns=["text"])
@@ -76,14 +83,15 @@ def main():
 
     args = TrainingArguments(
         output_dir=str(model_dir),
-        per_device_train_batch_size=2,
-        num_train_epochs=10,
+        per_device_train_batch_size=8,
+        num_train_epochs=6,
         save_strategy="epoch",
-        logging_steps=1,
-        learning_rate=5e-4,
+        logging_steps=10,
+        learning_rate=3e-4,
         weight_decay=0.01,
         report_to="none",
-        no_cuda=True,
+        no_cuda=not use_cuda,
+        fp16=use_cuda,
     )
 
     collator = DataCollatorForLanguageModeling(
