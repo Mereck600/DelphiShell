@@ -3,101 +3,16 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/stat.h>
 #include <sys/wait.h>
 #include "shell.h"
 #include "node.h"
 #include "executor.h"
 
 
-char *search_path(char *file)
-{
-    char *PATH = getenv("PATH");
-    char *p    = PATH;
-    char *p2;
-    
-    while(p && *p)
-    {
-        p2 = p;
-
-        while(*p2 && *p2 != ':')
-        {
-            p2++;
-        }
-        
-	int  plen = p2-p;
-        if(!plen)
-        {
-            plen = 1;
-        }
-        
-        int  alen = strlen(file);
-        char path[plen+1+alen+1];
-        
-	strncpy(path, p, p2-p);
-        path[p2-p] = '\0';
-        
-	if(p2[-1] != '/')
-        {
-            strcat(path, "/");
-        }
-
-        strcat(path, file);
-        
-	struct stat st;
-        if(stat(path, &st) == 0)
-        {
-            if(!S_ISREG(st.st_mode))
-            {
-                errno = ENOENT;
-                p = p2;
-                if(*p2 == ':')
-                {
-                    p++;
-                }
-                continue;
-            }
-
-            p = malloc(strlen(path)+1);
-            if(!p)
-            {
-                return NULL;
-            }
-            
-	    strcpy(p, path);
-            return p;
-        }
-        else    /* file not found */
-        {
-            p = p2;
-            if(*p2 == ':')
-            {
-                p++;
-            }
-        }
-    }
-
-    errno = ENOENT;
-    return NULL;
-}
-
-
 int do_exec_cmd(int argc, char **argv)
 {
-    if(strchr(argv[0], '/'))
-    {
-        execv(argv[0], argv);
-    }
-    else
-    {
-        char *path = search_path(argv[0]);
-        if(!path)
-        {
-            return 0;
-        }
-        execv(path, argv);
-        free(path);
-    }
+    (void)argc;
+    execvp(argv[0], argv);
     return 0;
 }
 
@@ -154,12 +69,8 @@ int do_simple_command(struct node_s *node)
     }
     argv[argc] = NULL;
 
-    //check user cmd witrh builtins list 
-    //int i = 0;
-   printf("builtins_count=%d\n", builtins_count);
     for (int i = 0; i < builtins_count; i++)
     {
-        printf("builtin[%d]='%s'\n", i, builtins[i].name);
         if (strcmp(argv[0], builtins[i].name) == 0)
         {
             builtins[i].func(argc, argv);

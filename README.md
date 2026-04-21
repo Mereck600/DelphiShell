@@ -19,6 +19,14 @@ make train
 make run
 ```
 
+## Other training commands:
+```bash
+make train
+make train TRAIN_ARGS="--init scratch"
+make train TRAIN_ARGS="--init pretrained --rebuild-dataset --epochs 8"
+
+```
+
 ## Example Delphi Usage: 
 
 
@@ -50,6 +58,9 @@ Here is what I have currently to run the model alone:
 {"mode":"shell","command":"ls"}
 ```
 
+TODO:
+Add widows specific model/training 
+make sure it is cross platform
 
 Next Steps:
 Practical limitations

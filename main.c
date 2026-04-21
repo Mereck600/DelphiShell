@@ -17,6 +17,9 @@ int run_delphi_input(const char *input);
 // if exit we exit the shell, otherwise we echo back cmd, free mem and continue w/ loop
 
 int main(int argc, char **argv){
+    (void)argc;
+    (void)argv;
+
 	char *cmd;
     initsh(); //init the symbol table and stack elements
 
@@ -77,11 +80,11 @@ char *read_cmd(void)
 {
     char buf[1024];
     char *ptr = NULL;
-    char ptrlen = 0;
+    size_t ptrlen = 0;
 
     while(fgets(buf, 1024, stdin))
     {
-        int buflen = strlen(buf);
+        size_t buflen = strlen(buf);
 
         if(!ptr)
         {

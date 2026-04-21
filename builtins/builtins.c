@@ -5,6 +5,10 @@
 
 struct builtin_s builtins[] =
 {
+    { "cd", shell_cd },
+    { "pwd", shell_pwd },
+    { "help", shell_help },
+    { "exit", shell_exit },
     { "dump", dump },
     { "delphi", delphi },
 };

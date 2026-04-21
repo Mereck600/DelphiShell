@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +26,7 @@ static void trim_newline(char *s)
 
 static int extract_json_value(const char *json, const char *key, char *out, size_t out_size)
 {
-    // Pulls a simple string value out of the flat JSON response returned by Delphi.
+    // Pulls a JSON string value out of the flat response and preserves escaped quotes.
     char pattern[128];
     snprintf(pattern, sizeof(pattern), "\"%s\":\"", key);
 
@@ -32,14 +34,58 @@ static int extract_json_value(const char *json, const char *key, char *out, size
     if (!start) return 0;
     start += strlen(pattern);
 
-    char *end = strchr(start, '"');
-    if (!end) return 0;
+    size_t j = 0;
+    int escaped = 0;
 
-    size_t len = (size_t)(end - start);
-    if (len >= out_size) len = out_size - 1;
+    for (size_t i = 0; start[i] != '\0'; i++) {
+        char ch = start[i];
 
-    strncpy(out, start, len);
-    out[len] = '\0';
+        if (escaped) {
+            if (j + 1 >= out_size) return 0;
+
+            switch (ch) {
+                case 'n':
+                    out[j++] = '\n';
+                    break;
+                case 'r':
+                    out[j++] = '\r';
+                    break;
+                case 't':
+                    out[j++] = '\t';
+                    break;
+                case '\\':
+                case '"':
+                case '/':
+                    out[j++] = ch;
+                    break;
+                default:
+                    out[j++] = ch;
+                    break;
+            }
+
+            escaped = 0;
+            continue;
+        }
+
+        if (ch == '\\') {
+            escaped = 1;
+            continue;
+        }
+
+        if (ch == '"') {
+            out[j] = '\0';
+            return 1;
+        }
+
+        if (j + 1 >= out_size) return 0;
+        out[j++] = ch;
+    }
+
+    if (j < out_size) {
+        out[j] = '\0';
+    }
+
+    if (escaped) return 0;
     return 1;
 }
 

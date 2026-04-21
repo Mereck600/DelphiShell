@@ -9,6 +9,8 @@
 
 int dump(int argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
     dump_local_symtab();
     return 0;
 }

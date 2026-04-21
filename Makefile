@@ -14,8 +14,12 @@ SRC = \
 	initsh.c \
 	symtab/symtab.c \
 	builtins/builtins.c \
+	builtins/cd.c \
 	builtins/dump.c \
 	builtins/delphi.c \
+	builtins/exit.c \
+	builtins/help.c \
+	builtins/pwd.c \
 	delphi_mode.c \
 	delphi_bridge.c
 
@@ -44,7 +48,10 @@ dataset: deps
 	$(PYTHON) delphi/build_dataset.py
 
 train: dataset
-	$(PYTHON) delphi/train_delphi.py
+	$(PYTHON) delphi/train_delphi.py $(TRAIN_ARGS)
+
+eval: dataset
+	$(PYTHON) delphi/eval_delphi.py
 
 run: $(TARGET)
 	./$(TARGET)
@@ -59,4 +66,4 @@ distclean: clean
 
 rebuild: clean all
 
-.PHONY: all venv deps dataset train run clean distclean rebuild
+.PHONY: all venv deps dataset train eval run clean distclean rebuild

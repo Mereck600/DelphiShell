@@ -1,0 +1,88 @@
+{
+  "format": "delphi-eval-dataset-v1",
+  "count": 10,
+  "records": [
+    {
+      "instruction": "show the last five commits",
+      "action": {
+        "mode": "shell",
+        "command": "git log --oneline -5"
+      },
+      "text": "Instruction: show the last five commits\nJSON: {\"mode\":\"shell\",\"command\":\"git log --oneline -5\"}"
+    },
+    {
+      "instruction": "show git status",
+      "action": {
+        "mode": "shell",
+        "command": "git status"
+      },
+      "text": "Instruction: show git status\nJSON: {\"mode\":\"shell\",\"command\":\"git status\"}"
+    },
+    {
+      "instruction": "move to project folder and go into all subfolders and create a subfolder archive",
+      "action": {
+        "mode": "shell",
+        "command": "find \"project\" -type d -exec mkdir -p \"{}/archive\" \\;"
+      },
+      "text": "Instruction: move to project folder and go into all subfolders and create a subfolder archive\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"project\\\" -type d -exec mkdir -p \\\"{}/archive\\\" \\\\;\"}"
+    },
+    {
+      "instruction": "copy Dockerfile into every subfolder in projects",
+      "action": {
+        "mode": "shell",
+        "command": "find \"projects\" -type d -exec cp \"Dockerfile\" \"{}/Dockerfile\" \\;"
+      },
+      "text": "Instruction: copy Dockerfile into every subfolder in projects\nJSON: {\"mode\":\"shell\",\"command\":\"find \\\"projects\\\" -type d -exec cp \\\"Dockerfile\\\" \\\"{}/Dockerfile\\\" \\\\;\"}"
+    },
+    {
+      "instruction": "create the nested directory workspace/docs/drafts",
+      "action": {
+        "mode": "shell",
+        "command": "mkdir -p \"workspace/docs/drafts\""
+      },
+      "text": "Instruction: create the nested directory workspace/docs/drafts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p \\\"workspace/docs/drafts\\\"\"}"
+    },
+    {
+      "instruction": "run worker.py",
+      "action": {
+        "mode": "run_file",
+        "command": "python3 worker.py"
+      },
+      "text": "Instruction: run worker.py\nJSON: {\"mode\":\"run_file\",\"command\":\"python3 worker.py\"}"
+    },
+    {
+      "instruction": "execute bundle.js with node",
+      "action": {
+        "mode": "run_file",
+        "command": "node bundle.js"
+      },
+      "text": "Instruction: execute bundle.js with node\nJSON: {\"mode\":\"run_file\",\"command\":\"node bundle.js\"}"
+    },
+    {
+      "instruction": "create config.json inside billing",
+      "action": {
+        "mode": "write_file",
+        "path": "billing/config.json",
+        "content": ""
+      },
+      "text": "Instruction: create config.json inside billing\nJSON: {\"mode\":\"write_file\",\"path\":\"billing/config.json\",\"content\":\"\"}"
+    },
+    {
+      "instruction": "make an empty file called LICENSE",
+      "action": {
+        "mode": "write_file",
+        "path": "LICENSE",
+        "content": ""
+      },
+      "text": "Instruction: make an empty file called LICENSE\nJSON: {\"mode\":\"write_file\",\"path\":\"LICENSE\",\"content\":\"\"}"
+    },
+    {
+      "instruction": "tell me the weather",
+      "action": {
+        "mode": "answer",
+        "text": "I can help with local shell and file actions but not live weather."
+      },
+      "text": "Instruction: tell me the weather\nJSON: {\"mode\":\"answer\",\"text\":\"I can help with local shell and file actions but not live weather.\"}"
+    }
+  ]
+}

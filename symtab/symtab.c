@@ -100,7 +100,6 @@ void free_symtab(struct symtab_s *symtab)
 void dump_local_symtab(void)
 {
     struct symtab_s *symtab = symtab_stack.local_symtab;
-    int i = 0;
     int indent = symtab->level * 4;
 
     fprintf(stderr, "%*sSymbol table [Level %d]:\r\n", indent, " ", symtab->level);

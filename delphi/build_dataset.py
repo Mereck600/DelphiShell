@@ -1,22 +1,381 @@
 import json
+from itertools import product
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-OUT = ROOT / "data" / "commands.jsonl"
+DATA_DIR = ROOT / "data"
+JSON_PATH = DATA_DIR / "command_dataset.json"
+JSONL_PATH = DATA_DIR / "commands.jsonl"
+EVAL_PATH = DATA_DIR / "eval_dataset.json"
 
-examples = [
-    ("list files", {"mode":"shell","command":"ls"}),
-    ("show current directory", {"mode":"shell","command":"pwd"}),
-    ("make directory src", {"mode":"shell","command":"mkdir -p src"}),
-    ("create a file named notes.txt", {"mode":"write_file","path":"notes.txt","content":""}),
-    ("make hello.py that prints hi", {"mode":"write_file","path":"hello.py","content":"print('hi')"}),
-    ("run hello.py", {"mode":"run_file","command":"python3 hello.py"}),
-    ("compile main.c", {"mode":"shell","command":"gcc -o main main.c"}),
-]
 
-OUT.parent.mkdir(parents=True, exist_ok=True)
+def add_example(examples, instruction, action):
+    examples.append(
+        {
+            "instruction": instruction,
+            "action": action,
+            "text": f"Instruction: {instruction}\nJSON: {json.dumps(action, separators=(',', ':'))}",
+        }
+    )
 
-with open(OUT, "w", encoding="utf-8") as f:
-    for user, action in examples:
-        row = {"text": f"User: {user}\nAction: {json.dumps(action, separators=(',', ':'))}"}
-        f.write(json.dumps(row) + "\n")
+
+def recursive_subfolder_command(base_folder, subfolder_name):
+    return f'find "{base_folder}" -type d -exec mkdir -p "{{}}/{subfolder_name}" \\;'
+
+
+def recursive_copy_command(base_folder, filename):
+    return f'find "{base_folder}" -type d -exec cp "{filename}" "{{}}/{filename}" \\;'
+
+
+def build_shell_alias_examples():
+    examples = []
+    shell_aliases = [
+        ("ls", ["list files", "show files", "display files", "show directory contents"]),
+        ("pwd", ["show current directory", "print working directory", "where am i", "what folder am i in"]),
+        ("ls -la", ["list all files with details", "show hidden files with details", "display long directory listing"]),
+        ("find . -maxdepth 2 -type f", ["find files within two levels", "show files up to depth two", "list files in current folder and subfolders to depth two"]),
+        ("find . -type d", ["show all folders recursively", "list all directories under the current folder", "find every directory recursively"]),
+        ("du -sh .", ["show folder size", "display current directory size", "check how big this directory is"]),
+        ("git status", ["show git status", "check repository status", "what changed in git"]),
+        ("git log --oneline -5", ["show the last five commits", "display recent git commits", "list five recent commits"]),
+        ("git diff --stat", ["show git diff summary", "summarize changed files in git", "show changed file stats"]),
+        ("git branch", ["list git branches", "show git branches", "what branches exist"]),
+        ("git checkout main", ["switch to main branch", "checkout main branch", "move to the main branch"]),
+        ("ps aux", ["show running processes", "list active processes", "display all processes"]),
+        ("env", ["show environment variables", "print environment variables", "display environment variables"]),
+        ("date", ["show the date", "print current date", "what time is it"]),
+        ("whoami", ["show current user", "who am i", "print my username"]),
+        ("python3 --version", ["show python version", "print python version", "check installed python version"]),
+        ("node --version", ["show node version", "print node version", "check node version"]),
+        ("npm --version", ["show npm version", "print npm version", "check npm version"]),
+        ("gcc --version", ["show gcc version", "print gcc version", "check c compiler version"]),
+        ("cargo --version", ["show cargo version", "print cargo version", "check cargo version"]),
+        ("python3 -m pytest", ["run the python tests", "execute pytest", "run all tests with pytest"]),
+        ("npm test", ["run npm tests", "execute javascript tests", "run the test script"]),
+        ("make test", ["run make test", "execute the makefile tests", "start tests with make"]),
+        ("python3 -m http.server 8000", ["start a local web server on port 8000", "serve the current directory on port 8000", "run a simple http server on 8000"]),
+    ]
+    for command, prompts in shell_aliases:
+        for prompt in prompts:
+            add_example(examples, prompt, {"mode": "shell", "command": command})
+    return examples
+
+
+def build_directory_examples():
+    examples = []
+    roots = [
+        "src", "tests", "docs", "scripts", "build", "dist", "assets", "logs", "tmp",
+        "data", "config", "examples", "archive", "backups", "reports", "fixtures",
+        "images", "styles", "components", "public", "services", "modules", "themes",
+        "plugins", "clients", "workspace", "content", "releases", "packages", "tools",
+        "bin", "lib", "configs", "jobs", "workers", "sites", "templates", "migrations",
+    ]
+    nested = [
+        "src/components", "src/utils", "src/data", "src/hooks", "src/pages", "src/lib",
+        "tests/unit", "tests/integration", "tests/fixtures", "docs/api", "docs/guides",
+        "docs/examples", "logs/archive", "assets/images", "assets/styles", "assets/icons",
+        "tmp/cache", "config/env", "public/uploads", "services/auth", "services/api",
+        "packages/core", "packages/ui", "modules/shared", "themes/default", "clients/acme",
+        "clients/umbrella", "sites/admin", "sites/landing", "workers/queue", "jobs/daily",
+        "templates/email", "templates/pdf", "migrations/sql", "configs/local",
+    ]
+    dir_verbs = ["make", "create", "add", "generate", "set up", "build"]
+    dir_nouns = ["directory", "folder"]
+    dir_starters = ["named", "called"]
+
+    for name in roots:
+        for verb, noun, starter in product(dir_verbs, dir_nouns, dir_starters):
+            add_example(examples, f"{verb} a {noun} {starter} {name}", {"mode": "shell", "command": f"mkdir -p {name}"})
+        for prompt in [f"make {name} folder", f"create {name} directory", f"set up {name}", f"add the folder {name}"]:
+            add_example(examples, prompt, {"mode": "shell", "command": f"mkdir -p {name}"})
+
+    for name in nested:
+        prompts = [
+            f"create the directory {name}",
+            f"make folder {name}",
+            f"set up the folder {name}",
+            f"add the directory {name}",
+            f"build out {name}",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, {"mode": "shell", "command": f"mkdir -p {name}"})
+    return examples
+
+
+def build_recursive_examples():
+    examples = []
+    recursive_folder_examples = [
+        ("project", "archive"), ("src", "generated"), ("docs", "drafts"),
+        ("assets", "thumbnails"), ("clients", "reports"), ("workspace", "backup"),
+        ("photos", "edited"), ("tests", "fixtures"), ("content", "images"),
+        ("releases", "notes"), ("modules", "generated"), ("themes", "partials"),
+        ("packages", "dist"), ("services", "logs"), ("configs", "snapshots"),
+        ("sites", "assets"), ("workers", "artifacts"), ("templates", "cache"),
+        ("plugins", "generated"), ("jobs", "output"),
+    ]
+    for base, child in recursive_folder_examples:
+        command = recursive_subfolder_command(base, child)
+        prompts = [
+            f"move to {base} folder and go into all subfolders and create a subfolder {child}",
+            f"go into all subfolders in {base} and create a subfolder named {child}",
+            f"create a subfolder named {child} inside every folder in {base}",
+            f"add a subfolder called {child} to every subfolder in {base}",
+            f"visit every folder under {base} and make a {child} subfolder",
+            f"for each folder in {base}, create the subfolder {child}",
+            f"walk every directory in {base} and add a {child} folder",
+            f"create {child} in every subdirectory of {base}",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, {"mode": "shell", "command": command})
+
+    recursive_copy_examples = [
+        ("templates", "README.md"), ("services", "config.json"), ("projects", "Dockerfile"),
+        ("clients", "notes.txt"), ("modules", "index.js"), ("packages", "package.json"),
+        ("themes", "style.css"), ("examples", "main.py"), ("workers", "worker.py"),
+        ("sites", "index.html"),
+    ]
+    for base, filename in recursive_copy_examples:
+        command = recursive_copy_command(base, filename)
+        prompts = [
+            f"copy {filename} into every subfolder in {base}",
+            f"put {filename} inside each folder under {base}",
+            f"walk through {base} and copy {filename} to every subfolder",
+            f"add {filename} to all directories in {base}",
+            f"place {filename} in every nested folder in {base}",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, {"mode": "shell", "command": command})
+    return examples
+
+
+def build_batch_structure_examples():
+    examples = []
+    batch_roots = [
+        "client-a", "client-b", "client-c", "service-a", "service-b", "service-c",
+        "package-a", "package-b", "theme-a", "theme-b", "workspace-a", "workspace-b",
+        "plugin-a", "plugin-b", "site-a", "site-b", "worker-a", "worker-b",
+    ]
+    batch_child_dirs = ["logs", "reports", "archive", "input", "output", "drafts", "build", "dist", "cache", "assets"]
+    for root, child in product(batch_roots, batch_child_dirs):
+        command = f'mkdir -p "{root}/{child}"'
+        prompts = [
+            f"inside {root} create a {child} folder",
+            f"make the directory {child} under {root}",
+            f"add {child} inside {root}",
+            f"set up {root}/{child}",
+            f"create {root}/{child}",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, {"mode": "shell", "command": command})
+    return examples
+
+
+def build_file_examples():
+    examples = []
+    empty_files = [
+        "notes.txt", "todo.txt", "README.md", "config.json", "main.py", "app.js",
+        "index.html", "style.css", "script.sh", "Dockerfile", ".gitignore",
+        "requirements.txt", "package.json", "index.js", "server.py", "data.csv",
+        "cli.py", "worker.js", "settings.toml", "docker-compose.yml", "env.example",
+        "LICENSE", "CHANGELOG.md", "Makefile", "tsconfig.json",
+    ]
+    for name in empty_files:
+        for prompt in [f"create a file named {name}", f"make an empty file called {name}", f"add a blank file named {name}", f"create {name}"]:
+            add_example(examples, prompt, {"mode": "write_file", "path": name, "content": ""})
+
+    file_templates = [
+        ("hello.py", "print('hello world')\n", ["make hello.py that prints hello world", "create hello.py with a hello world print", "write a python hello world file named hello.py"]),
+        ("main.py", "def main():\n    print('hi')\n\n\nif __name__ == '__main__':\n    main()\n", ["create main.py that prints hi", "make a python entry file named main.py that prints hi", "write main.py with a main function that prints hi"]),
+        ("app.js", "console.log('hello from node');\n", ["create app.js that logs hello from node", "make app.js printing hello from node", "write a javascript file app.js that logs a greeting"]),
+        ("index.html", "<!doctype html>\n<html>\n<head><title>Home</title></head>\n<body><h1>Hello</h1></body>\n</html>\n", ["create index.html with a hello heading", "make a basic html page called index.html", "write index.html with a simple hello page"]),
+        ("style.css", "body {\n    font-family: sans-serif;\n    margin: 0;\n}\n", ["create style.css with a basic body rule", "make a stylesheet named style.css", "write style.css with simple body styles"]),
+        ("script.sh", "#!/bin/sh\necho \"hello\"\n", ["create script.sh that echoes hello", "make a shell script named script.sh that prints hello", "write script.sh with a hello echo"]),
+        ("README.md", "# Project\n\nA small starter project.\n", ["create a readme file", "make README.md for a small starter project", "write README.md with a short project heading"]),
+        ("config.json", "{\n  \"debug\": true,\n  \"port\": 3000\n}\n", ["create config.json with debug enabled and port 3000", "make a config file with debug true", "write config.json for port 3000"]),
+        ("docker-compose.yml", "services:\n  app:\n    image: nginx:latest\n    ports:\n      - \"8080:80\"\n", ["create a docker compose file for nginx", "make docker-compose.yml exposing port 8080", "write docker-compose.yml for a simple nginx service"]),
+        (".gitignore", "__pycache__/\nnode_modules/\n.env\n", ["create a gitignore file", "make .gitignore for python and node", "write .gitignore with common ignores"]),
+    ]
+    for path, content, prompts in file_templates:
+        for prompt in prompts:
+            add_example(examples, prompt, {"mode": "write_file", "path": path, "content": content})
+    return examples
+
+
+def build_run_examples():
+    examples = []
+    python_runs = ["main.py", "hello.py", "app.py", "server.py", "manage.py", "tool.py", "worker.py", "cli.py", "build.py", "seed.py", "migrate.py", "deploy.py"]
+    for filename in python_runs:
+        for prompt in [f"run {filename}", f"execute {filename}", f"start the python file {filename}", f"launch {filename}"]:
+            add_example(examples, prompt, {"mode": "run_file", "command": f"python3 {filename}"})
+
+    js_runs = ["app.js", "server.js", "index.js", "cli.js", "worker.js", "build.js", "seed.js", "watch.js", "deploy.js", "bundle.js"]
+    for filename in js_runs:
+        for prompt in [f"run {filename}", f"execute {filename} with node", f"launch {filename} using node", f"start {filename} with node"]:
+            add_example(examples, prompt, {"mode": "run_file", "command": f"node {filename}"})
+    return examples
+
+
+def build_compile_examples():
+    examples = []
+    compile_examples = [
+        ("main.c", "main"), ("program.c", "program"), ("tool.c", "tool"), ("app.c", "app"),
+        ("server.c", "server"), ("client.c", "client"), ("worker.c", "worker"), ("shell.c", "shell"),
+        ("daemon.c", "daemon"), ("parser.c", "parser"),
+    ]
+    for source, target in compile_examples:
+        prompts = [
+            f"compile {source}",
+            f"use gcc to compile {source}",
+            f"build {source}",
+            f"compile {source} into an executable",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, {"mode": "shell", "command": f"gcc -o {target} {source}"})
+    return examples
+
+
+def build_parametric_examples():
+    examples = []
+    projects = ["api", "frontend", "worker", "dashboard", "admin", "landing", "cli", "auth", "billing", "search", "catalog", "portal"]
+    resources = ["logs", "reports", "archive", "input", "output", "cache", "images", "drafts", "exports", "imports", "fixtures", "temp"]
+    verbs = ["create", "make", "set up", "add", "build"]
+    for project_name, resource_name, verb in product(projects, resources, verbs):
+        add_example(examples, f"{verb} the folder {project_name}/{resource_name}", {"mode": "shell", "command": f"mkdir -p {project_name}/{resource_name}"})
+        add_example(examples, f"{verb} a {resource_name} directory in {project_name}", {"mode": "shell", "command": f"mkdir -p {project_name}/{resource_name}"})
+        add_example(examples, f"{verb} {resource_name} under {project_name}", {"mode": "shell", "command": f"mkdir -p {project_name}/{resource_name}"})
+
+    filenames = ["README.md", "config.json", "index.js", "main.py", "Dockerfile", "package.json", "requirements.txt", "notes.txt"]
+    for project_name, filename in product(projects, filenames):
+        add_example(examples, f"create {filename} inside {project_name}", {"mode": "write_file", "path": f"{project_name}/{filename}", "content": ""})
+        add_example(examples, f"add an empty {filename} file to {project_name}", {"mode": "write_file", "path": f"{project_name}/{filename}", "content": ""})
+        add_example(examples, f"make {project_name}/{filename}", {"mode": "write_file", "path": f"{project_name}/{filename}", "content": ""})
+    return examples
+
+
+def build_multi_step_examples():
+    examples = []
+    bases = ["project", "workspace", "client-a", "client-b", "service-a", "service-b", "package-a", "theme-a"]
+    mids = ["src", "docs", "assets", "tests", "configs", "scripts"]
+    leaves = ["generated", "drafts", "images", "fixtures", "logs", "output"]
+    for base, mid, leaf in product(bases, mids, leaves):
+        command = f'mkdir -p "{base}/{mid}/{leaf}"'
+        prompts = [
+            f"inside {base}, create {mid}/{leaf}",
+            f"make the folder {base}/{mid}/{leaf}",
+            f"set up {leaf} under {base}/{mid}",
+            f"create the nested directory {base}/{mid}/{leaf}",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, {"mode": "shell", "command": command})
+    return examples
+
+
+def build_answer_examples():
+    examples = []
+    answers = [
+        ("tell me a joke", "I can help with shell-style actions, file creation, and running files."),
+        ("what is the meaning of life", "I can help map requests into shell commands or simple file actions."),
+        ("who won the world series", "I am trained for local command actions and cannot answer that confidently."),
+        ("write me a poem", "I am focused on command execution and simple project scaffolding tasks."),
+        ("explain quantum mechanics", "I can help with terminal tasks, but I cannot answer that confidently here."),
+        ("browse the web for me", "I am focused on local shell and file actions in this project."),
+        ("solve calculus for me", "I am focused on mapping local instructions to shell and file actions."),
+        ("tell me the weather", "I can help with local shell and file actions but not live weather."),
+        ("summarize this novel", "I am focused on terminal and project actions in this environment."),
+        ("who is the president", "I am trained for local command execution tasks, not current events."),
+    ]
+    for prompt, text in answers:
+        add_example(examples, prompt, {"mode": "answer", "text": text})
+        add_example(examples, f"please {prompt}", {"mode": "answer", "text": text})
+    return examples
+
+
+def dedupe_and_sort(examples):
+    deduped = []
+    seen = set()
+    for row in examples:
+        key = (row["instruction"], json.dumps(row["action"], sort_keys=True))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(row)
+    deduped.sort(key=lambda row: row["instruction"])
+    return deduped
+
+
+def build_eval_examples():
+    examples = []
+    eval_rows = [
+        ("show the last five commits", {"mode": "shell", "command": "git log --oneline -5"}),
+        ("show git status", {"mode": "shell", "command": "git status"}),
+        ("move to project folder and go into all subfolders and create a subfolder archive", {"mode": "shell", "command": recursive_subfolder_command("project", "archive")}),
+        ("copy Dockerfile into every subfolder in projects", {"mode": "shell", "command": recursive_copy_command("projects", "Dockerfile")}),
+        ("create the nested directory workspace/docs/drafts", {"mode": "shell", "command": 'mkdir -p "workspace/docs/drafts"'}),
+        ("run worker.py", {"mode": "run_file", "command": "python3 worker.py"}),
+        ("execute bundle.js with node", {"mode": "run_file", "command": "node bundle.js"}),
+        ("create config.json inside billing", {"mode": "write_file", "path": "billing/config.json", "content": ""}),
+        ("make an empty file called LICENSE", {"mode": "write_file", "path": "LICENSE", "content": ""}),
+        ("tell me the weather", {"mode": "answer", "text": "I can help with local shell and file actions but not live weather."}),
+    ]
+    for instruction, action in eval_rows:
+        add_example(examples, instruction, action)
+    return examples
+
+
+def build_examples():
+    examples = []
+    for builder in [
+        build_shell_alias_examples,
+        build_directory_examples,
+        build_recursive_examples,
+        build_batch_structure_examples,
+        build_file_examples,
+        build_run_examples,
+        build_compile_examples,
+        build_parametric_examples,
+        build_multi_step_examples,
+        build_answer_examples,
+    ]:
+        examples.extend(builder())
+    return dedupe_and_sort(examples)
+
+
+def write_outputs(examples, eval_examples):
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    payload = {
+        "format": "delphi-command-dataset-v3",
+        "count": len(examples),
+        "records": examples,
+    }
+
+    with open(JSON_PATH, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+
+    with open(JSONL_PATH, "w", encoding="utf-8") as f:
+        for row in examples:
+            f.write(json.dumps({"text": row["text"]}) + "\n")
+
+    with open(EVAL_PATH, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "format": "delphi-eval-dataset-v1",
+                "count": len(eval_examples),
+                "records": eval_examples,
+            },
+            f,
+            indent=2,
+        )
+
+
+def main():
+    examples = build_examples()
+    eval_examples = build_eval_examples()
+    write_outputs(examples, eval_examples)
+    print(f"Wrote {len(examples)} examples to {JSON_PATH}")
+    print(f"Wrote training rows to {JSONL_PATH}")
+    print(f"Wrote {len(eval_examples)} eval examples to {EVAL_PATH}")
+
+
+if __name__ == "__main__":
+    main()

@@ -77,6 +77,7 @@ void free_token(struct token_s *tok)
 struct token_s *tokenize(struct source_s *src)
 {
     int  endloop = 0;
+    int  quote = 0;
 
     if(!src || !src->buffer || !src->bufsize)
     {
@@ -107,6 +108,37 @@ struct token_s *tokenize(struct source_s *src)
 
     do
     {
+        if(quote)
+        {
+            if(nc == quote)
+            {
+                quote = 0;
+            }
+            else if(nc == '\\')
+            {
+                char escaped = next_char(src);
+                if(escaped == ERRCHAR || escaped == EOF)
+                {
+                    endloop = 1;
+                }
+                else
+                {
+                    add_to_buf(escaped);
+                }
+            }
+            else
+            {
+                add_to_buf(nc);
+            }
+
+            if(endloop)
+            {
+                break;
+            }
+
+            continue;
+        }
+
         switch(nc)
         {
             case ' ':
@@ -127,6 +159,11 @@ struct token_s *tokenize(struct source_s *src)
                     add_to_buf(nc);
                 }
                 endloop = 1;
+                break;
+
+            case '"':
+            case '\'':
+                quote = nc;
                 break;
                 
             default:
