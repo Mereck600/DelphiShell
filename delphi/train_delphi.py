@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument(
         "--epochs",
         type=int,
-        default=6,
+        default=15,
         help="Number of training epochs",
     )
     parser.add_argument(
@@ -45,6 +45,17 @@ def parse_args():
         "--rebuild-dataset",
         action="store_true",
         help="Force rebuilding the dataset before training",
+    )
+    parser.add_argument(
+        "--include-nl2sh-alfa",
+        action="store_true",
+        help="Rebuild the dataset with filtered NL2SH-ALFA examples included.",
+    )
+    parser.add_argument(
+        "--nl2sh-limit",
+        type=int,
+        default=3000,
+        help="Maximum number of NL2SH-ALFA rows to include when rebuilding.",
     )
     return parser.parse_args()
 
@@ -149,7 +160,11 @@ def main():
     args = parse_args()
 
     if args.rebuild_dataset or not DATA_JSON_PATH.exists():
-        build_dataset()
+        build_dataset_args = []
+        if args.include_nl2sh_alfa:
+            build_dataset_args.append("--include-nl2sh-alfa")
+            build_dataset_args.extend(["--nl2sh-limit", str(args.nl2sh_limit)])
+        build_dataset(build_dataset_args)
 
     rows = load_dataset_rows(DATA_JSON_PATH)
     if not rows:

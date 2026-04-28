@@ -1,6 +1,6 @@
 {
   "format": "delphi-eval-dataset-v1",
-  "count": 10,
+  "count": 13,
   "records": [
     {
       "instruction": "show the last five commits",
@@ -41,6 +41,57 @@
         "command": "mkdir -p \"workspace/docs/drafts\""
       },
       "text": "Instruction: create the nested directory workspace/docs/drafts\nJSON: {\"mode\":\"shell\",\"command\":\"mkdir -p \\\"workspace/docs/drafts\\\"\"}"
+    },
+    {
+      "instruction": "move into the test directory and add a subdirectory called test5",
+      "action": {
+        "mode": "plan",
+        "steps": [
+          {
+            "mode": "cd",
+            "path": "test"
+          },
+          {
+            "mode": "shell",
+            "command": "mkdir -p \"test5\""
+          }
+        ]
+      },
+      "text": "Instruction: move into the test directory and add a subdirectory called test5\nJSON: {\"mode\":\"plan\",\"steps\":[{\"mode\":\"cd\",\"path\":\"test\"},{\"mode\":\"shell\",\"command\":\"mkdir -p \\\"test5\\\"\"}]}"
+    },
+    {
+      "instruction": "go into the workspace directory and make a file called README.md",
+      "action": {
+        "mode": "plan",
+        "steps": [
+          {
+            "mode": "cd",
+            "path": "workspace"
+          },
+          {
+            "mode": "shell",
+            "command": "touch \"README.md\""
+          }
+        ]
+      },
+      "text": "Instruction: go into the workspace directory and make a file called README.md\nJSON: {\"mode\":\"plan\",\"steps\":[{\"mode\":\"cd\",\"path\":\"workspace\"},{\"mode\":\"shell\",\"command\":\"touch \\\"README.md\\\"\"}]}"
+    },
+    {
+      "instruction": "change directory to service-a and start worker.py",
+      "action": {
+        "mode": "plan",
+        "steps": [
+          {
+            "mode": "cd",
+            "path": "service-a"
+          },
+          {
+            "mode": "shell",
+            "command": "python3 worker.py"
+          }
+        ]
+      },
+      "text": "Instruction: change directory to service-a and start worker.py\nJSON: {\"mode\":\"plan\",\"steps\":[{\"mode\":\"cd\",\"path\":\"service-a\"},{\"mode\":\"shell\",\"command\":\"python3 worker.py\"}]}"
     },
     {
       "instruction": "run worker.py",

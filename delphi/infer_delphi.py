@@ -2,12 +2,48 @@ import json
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 import torch
 from transformers import GPT2LMHeadModel, GPT2TokenizerFast
 
 ROOT = Path(__file__).resolve().parent
 MODEL_DIR = ROOT / "model"
+_TOKENIZER = None
+_MODEL = None
+_DEVICE = None
+
+
+def build_single_step_plan(path: str, command: str) -> dict:
+    return {
+        "mode": "plan",
+        "steps": [
+            {"mode": "cd", "path": path},
+            {"mode": "shell", "command": command},
+        ],
+    }
+
+
+def plan_compound_request(user_text: str) -> dict | None:
+    text = " ".join(user_text.strip().split())
+    patterns = [
+        r"move into (?:the )?(.+?) directory and add (?:a )?subdirectory called (.+)",
+        r"move into (?:the )?(.+?) directory and create (?:a )?subdirectory called (.+)",
+        r"go into (?:the )?(.+?) directory and add (?:a )?subdirectory called (.+)",
+        r"go into (?:the )?(.+?) directory and create (?:a )?subdirectory called (.+)",
+        r"change directory to (?:the )?(.+?) directory and add (?:a )?subdirectory called (.+)",
+        r"change directory to (?:the )?(.+?) directory and create (?:a )?subdirectory called (.+)",
+    ]
+
+    for pattern in patterns:
+        match = re.fullmatch(pattern, text, flags=re.IGNORECASE)
+        if not match:
+            continue
+
+        base, child = match.groups()
+        return build_single_step_plan(base.strip(), f'mkdir -p "{child.strip()}"')
+
+    return None
 
 
 def build_recursive_subfolder_command(base_folder: str, subfolder_name: str) -> str:
@@ -25,8 +61,6 @@ def build_recursive_copy_command(base_folder: str, filename: str) -> str:
 def safe_fallback(user_text: str) -> dict:
     # Maps common requests to safe actions when no model is available
     # or when generation fails validation.
-    print(f"Model dir is {MODEL_DIR}")
-    print("Fallback is called...")
     text = user_text.lower().strip()
 
     if text in ["list files", "show files", "display files", "ls", "list directory"]:
@@ -163,11 +197,45 @@ def normalize_action(action: dict) -> dict:
         }
 
     mode = action.get("mode")
-    if mode not in {"shell", "write_file", "run_file", "answer"}:
+    if mode not in {"shell", "write_file", "run_file", "answer", "cd", "plan"}:
         return {
             "mode": "answer",
             "text": "Model returned an unsupported action mode."
         }
+
+    if mode == "cd":
+        path = action.get("path", "")
+        if not isinstance(path, str) or not path.strip():
+            return {
+                "mode": "answer",
+                "text": "Model returned an invalid directory path."
+            }
+        return {"mode": "cd", "path": path.strip()}
+
+    if mode == "plan":
+        steps = action.get("steps")
+        if not isinstance(steps, list) or not steps:
+            return {
+                "mode": "answer",
+                "text": "Model returned an empty execution plan."
+            }
+
+        normalized_steps = []
+        for step in steps:
+            normalized = normalize_action(step)
+            if normalized.get("mode") == "answer" and "steps" not in normalized:
+                return {
+                    "mode": "answer",
+                    "text": "Model returned an invalid plan step."
+                }
+            if normalized.get("mode") == "plan":
+                return {
+                    "mode": "answer",
+                    "text": "Nested plans are not supported."
+                }
+            normalized_steps.append(normalized)
+
+        return {"mode": "plan", "steps": normalized_steps}
 
     if mode in {"shell", "run_file"}:
         command = action.get("command", "")
@@ -200,62 +268,178 @@ def normalize_action(action: dict) -> dict:
     return {"mode": "answer", "text": text.strip()}
 
 
-def generate_action(user_text: str) -> dict:
-    # Loads the local model, generates a JSON action, and falls back safely if
-    # the model is missing or returns something unusable.
+def load_model_once() -> bool:
+    global _TOKENIZER, _MODEL, _DEVICE
+
+    if _TOKENIZER is not None and _MODEL is not None and _DEVICE is not None:
+        return True
+
     if not MODEL_DIR.exists():
-        print("Can't find model dir calling safefallback...")
-        return safe_fallback(user_text)
+        return False
+
+    _DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    _TOKENIZER = GPT2TokenizerFast.from_pretrained(str(MODEL_DIR))
+    _MODEL = GPT2LMHeadModel.from_pretrained(str(MODEL_DIR))
+    _MODEL.config.pad_token_id = _TOKENIZER.eos_token_id # JUST ADDED THIS NEED TO TEST
+    _MODEL.eval()
+    _MODEL.to(_DEVICE)
+    return True
+
+
+# def generate_action(user_text: str) -> dict:
+#     # Loads the local model, generates a JSON action, and falls back safely if
+#     # the model is missing or returns something unusable.
+#     planned = plan_compound_request(user_text)
+#     if planned is not None:
+#         return planned
+
+#     try:
+#         if not load_model_once():
+#             return safe_fallback(user_text)
+
+#         prompt = (
+#             "Translate the instruction into JSON.\n"
+#             "Use mode plan with a steps array when the request contains multiple actions.\n"
+#             "Supported modes: shell, write_file, run_file, answer, cd, plan.\n"
+#             f"Instruction: {user_text}\nJSON: "
+#         )
+#         inputs = _TOKENIZER(prompt, return_tensors="pt")
+#         inputs = {key: value.to(_DEVICE) for key, value in inputs.items()}
+
+#         with torch.no_grad():
+#             # output = _MODEL.generate(
+#             #     **inputs,
+#             #     max_new_tokens=48,
+#             #     do_sample=False,
+#             #     pad_token_id=_TOKENIZER.eos_token_id,
+#             #     eos_token_id=_TOKENIZER.eos_token_id,
+#             # )
+#             output = _MODEL.generate(
+#                     **inputs,
+#                     max_new_tokens=120,
+#                     do_sample=True,
+#                     temperature=0.3,
+#                     top_p=0.9,
+#             )
+
+#         decoded = _TOKENIZER.decode(output[0], skip_special_tokens=True)
+#         action = extract_first_json_object(decoded)
+#         if action is None:
+#             return safe_fallback(user_text)
+
+#         return normalize_action(action)
+#     except Exception as e:
+#         print(f"Delphi inference error: {e}", file=sys.stderr)
+#         return safe_fallback(user_text)
+def generate_action(user_text: str) -> dict:
+    """
+    Loads the local Delphi model, generates a JSON action, validates it,
+    and falls back safely if the model is missing, malformed, or uncertain.
+    """
+
+    user_text = " ".join(str(user_text).strip().split())
+
+    if not user_text:
+        return {
+            "mode": "answer",
+            "text": "No input provided."
+        }
+
+    # First handle deterministic compound commands.
+    planned = plan_compound_request(user_text)
+    if planned is not None:
+        return planned
 
     try:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        tokenizer = GPT2TokenizerFast.from_pretrained(str(MODEL_DIR))
-        model = GPT2LMHeadModel.from_pretrained(str(MODEL_DIR))
-        model.eval()
-        model.to(device)
-
-        prompt = f"Instruction: {user_text}\nJSON: "
-        inputs = tokenizer(prompt, return_tensors="pt")
-        inputs = {key: value.to(device) for key, value in inputs.items()}
-
-        with torch.no_grad():
-            output = model.generate(
-                **inputs,
-                max_new_tokens=72,
-                do_sample=False,
-                pad_token_id=tokenizer.eos_token_id,
-                eos_token_id=tokenizer.eos_token_id,
-            )
-
-        decoded = tokenizer.decode(output[0], skip_special_tokens=True)
-        action = extract_first_json_object(decoded)
-        if action is None:
-            print("Action is none calling fallback...")
+        # If model does not exist, use rule-based fallback.
+        if not load_model_once():
             return safe_fallback(user_text)
 
-        return normalize_action(action)
+        prompt = (
+            "Translate the instruction into one valid JSON action.\n"
+            "Return JSON only. Do not explain.\n"
+            "Supported modes:\n"
+            "- shell: {\"mode\":\"shell\",\"command\":\"...\"}\n"
+            "- run_file: {\"mode\":\"run_file\",\"command\":\"...\"}\n"
+            "- write_file: {\"mode\":\"write_file\",\"path\":\"...\",\"content\":\"...\"}\n"
+            "- cd: {\"mode\":\"cd\",\"path\":\"...\"}\n"
+            "- plan: {\"mode\":\"plan\",\"steps\":[...]}\n"
+            "- answer: {\"mode\":\"answer\",\"text\":\"...\"}\n"
+            f"Instruction: {user_text}\n"
+            "JSON:"
+        )
+
+        inputs = _TOKENIZER(prompt, return_tensors="pt")
+        inputs = {key: value.to(_DEVICE) for key, value in inputs.items()}
+
+        with torch.no_grad():
+            output = _MODEL.generate(
+                **inputs,
+                max_new_tokens=120,
+                do_sample=True,
+                temperature=0.25,
+                top_p=0.9,
+                repetition_penalty=1.15,
+                pad_token_id=_TOKENIZER.eos_token_id,
+                eos_token_id=_TOKENIZER.eos_token_id,
+            )
+
+        decoded = _TOKENIZER.decode(output[0], skip_special_tokens=True)
+
+        # Optional but very useful while debugging:
+        # print("MODEL RAW OUTPUT:", decoded, file=sys.stderr)
+
+        generated_part = decoded[len(prompt):].strip()
+        action = extract_first_json_object(generated_part)
+
+        # Sometimes the model echoes the prompt, so try full decoded text too.
+        if action is None:
+            action = extract_first_json_object(decoded)
+
+        if action is None:
+            return safe_fallback(user_text)
+
+        normalized = normalize_action(action)
+
+        # If normalization failed, try fallback.
+        if normalized.get("mode") == "answer":
+            bad_messages = {
+                "Model output was not a valid action object.",
+                "Model returned an unsupported action mode.",
+                "Model returned an invalid directory path.",
+                "Model returned an empty execution plan.",
+                "Model returned an invalid plan step.",
+                "Nested plans are not supported.",
+                "Model returned an empty command.",
+                "Model returned an invalid file path.",
+            }
+
+            if normalized.get("text") in bad_messages:
+                return safe_fallback(user_text)
+
+        return normalized
+
     except Exception as e:
-        print(f"There was an exception calling fallback...{e}")
+        print(f"Delphi inference error: {e}", file=sys.stderr)
         return safe_fallback(user_text)
+
+def handle_request(user_text: str) -> dict:
+    if not user_text:
+        return {
+            "mode": "answer",
+            "text": "No input provided."
+        }
+
+    return generate_action(user_text)
 
 
 def main():
     if len(sys.argv) < 2:
-        print(json.dumps({
-            "mode": "answer",
-            "text": "No input provided."
-        }))
+        print(json.dumps(handle_request(""), separators=(",", ":")))
         return
 
     user_text = " ".join(sys.argv[1:]).strip()
-    if not user_text:
-        print(json.dumps({
-            "mode": "answer",
-            "text": "No input provided."
-        }))
-        return
-
-    action = generate_action(user_text)
+    action = handle_request(user_text)
     print(json.dumps(action, separators=(",", ":")))
 
 

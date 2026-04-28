@@ -45,7 +45,7 @@ deps: venv requirements.txt
 	$(PIP) install -r requirements.txt
 
 dataset: deps
-	$(PYTHON) delphi/build_dataset.py
+	$(PYTHON) delphi/build_dataset.py $(DATASET_ARGS)
 
 train: dataset
 	$(PYTHON) delphi/train_delphi.py $(TRAIN_ARGS)

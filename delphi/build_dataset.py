@@ -1,3 +1,4 @@
+import argparse
 import json
 from itertools import product
 from pathlib import Path
@@ -7,6 +8,21 @@ DATA_DIR = ROOT / "data"
 JSON_PATH = DATA_DIR / "command_dataset.json"
 JSONL_PATH = DATA_DIR / "commands.jsonl"
 EVAL_PATH = DATA_DIR / "eval_dataset.json"
+
+EXTERNAL_ALLOWED_PREFIXES = (
+    "ls", "pwd", "touch", "mkdir", "cp", "mv", "cat", "head", "tail", "grep",
+    "find", "stat", "whoami", "env", "printenv", "date", "echo", "git status",
+    "git diff", "git log", "git branch", "python3 --version", "node --version",
+    "npm --version", "gcc --version", "cargo --version", "python3 -m pytest",
+    "npm test", "make test", "du", "ps", "free", "df", "uname", "hostname",
+    "which", "type", "lsof", "vmstat", "w", "groups", "id", "locale", "lsblk",
+)
+EXTERNAL_FORBIDDEN_FRAGMENTS = ("&&", "||", ";", "|", ">", "<", "`", "$(")
+EXTERNAL_FORBIDDEN_PREFIXES = (
+    "rm", "rmdir", "unlink", "sudo", "apt", "apt-get", "apt-cache", "pip",
+    "npm install", "chown", "chmod", "dd", "mkfs", "shutdown", "reboot",
+    "kill", "pkill", "killall", "crontab", "ssh", "scp", "curl", "wget",
+)
 
 
 def add_example(examples, instruction, action):
@@ -25,6 +41,55 @@ def recursive_subfolder_command(base_folder, subfolder_name):
 
 def recursive_copy_command(base_folder, filename):
     return f'find "{base_folder}" -type d -exec cp "{filename}" "{{}}/{filename}" \\;'
+
+
+def plan_cd_then_shell(path, command):
+    return {
+        "mode": "plan",
+        "steps": [
+            {"mode": "cd", "path": path},
+            {"mode": "shell", "command": command},
+        ],
+    }
+
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description="Build the Delphi training dataset")
+    parser.add_argument(
+        "--include-nl2sh-alfa",
+        action="store_true",
+        help="Mix in a filtered subset of westenfelder/NL2SH-ALFA shell examples.",
+    )
+    parser.add_argument(
+        "--nl2sh-limit",
+        type=int,
+        default=3000,
+        help="Maximum number of NL2SH-ALFA rows to import.",
+    )
+    return parser.parse_args(argv)
+
+
+def normalize_shell_command(command):
+    return " ".join(str(command).strip().split())
+
+
+def is_supported_external_command(command):
+    normalized = normalize_shell_command(command)
+    if not normalized:
+        return False
+
+    if any(fragment in normalized for fragment in EXTERNAL_FORBIDDEN_FRAGMENTS):
+        return False
+
+    for prefix in EXTERNAL_FORBIDDEN_PREFIXES:
+        if normalized == prefix or normalized.startswith(prefix + " "):
+            return False
+
+    for prefix in EXTERNAL_ALLOWED_PREFIXES:
+        if normalized == prefix or normalized.startswith(prefix + " "):
+            return True
+
+    return False
 
 
 def build_shell_alias_examples():
@@ -215,6 +280,25 @@ def build_run_examples():
     return examples
 
 
+def build_move_examples():
+    examples = []
+    filenames = ["test.py", "main.py", "README.md", "notes.txt", "config.json"]
+    destinations = ["test", "tests", "src", "docs", "workspace", "archive"]
+
+    for filename, dest in product(filenames, destinations):
+        command = f'mv "{filename}" "{dest}/"'
+        prompts = [
+            f"move {filename} into {dest} directory",
+            f"move {filename} into the {dest} directory",
+            f"put {filename} in {dest}",
+            f"place {filename} inside the {dest} folder",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, {"mode": "shell", "command": command})
+
+    return examples
+
+
 def build_compile_examples():
     examples = []
     compile_examples = [
@@ -270,6 +354,85 @@ def build_multi_step_examples():
     return examples
 
 
+def build_plan_examples():
+    examples = []
+    bases = [
+        "test", "test1", "project", "workspace", "src", "docs",
+        "assets", "tests", "client-a", "service-a", "package-a", "theme-a",
+    ]
+    child_dirs = [
+        "test5", "archive", "drafts", "generated", "fixtures",
+        "logs", "output", "images", "reports", "cache",
+    ]
+
+    for base, child in product(bases, child_dirs):
+        action = plan_cd_then_shell(base, f'mkdir -p "{child}"')
+        prompts = [
+            f"move into the {base} directory and add a subdirectory called {child}",
+            f"move into the {base} directory and create a subdirectory called {child}",
+            f"go into the {base} directory and add a subdirectory called {child}",
+            f"go into the {base} directory and create a subdirectory called {child}",
+            f"change directory to the {base} directory and add a subdirectory called {child}",
+            f"change directory to the {base} directory and create a subdirectory called {child}",
+            f"enter the {base} folder and create a directory named {child}",
+            f"switch to {base} and make a folder called {child}",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, action)
+
+    files = ["README.md", "notes.txt", "config.json", "main.py"]
+    for base, filename in product(bases, files):
+        action = plan_cd_then_shell(base, f'touch "{filename}"')
+        prompts = [
+            f"move into the {base} directory and create a file named {filename}",
+            f"go into the {base} directory and make a file called {filename}",
+            f"change directory to {base} and create {filename}",
+            f"enter the {base} folder and add an empty file named {filename}",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, action)
+
+    run_targets = [("main.py", "python3 main.py"), ("worker.py", "python3 worker.py"), ("app.js", "node app.js")]
+    for base, (target, command) in product(bases, run_targets):
+        action = plan_cd_then_shell(base, command)
+        prompts = [
+            f"move into the {base} directory and run {target}",
+            f"go into the {base} directory and execute {target}",
+            f"change directory to {base} and start {target}",
+        ]
+        for prompt in prompts:
+            add_example(examples, prompt, action)
+
+    return examples
+
+
+def build_external_nl2sh_alfa_examples(limit):
+    try:
+        from datasets import load_dataset
+    except ImportError:
+        print("datasets library not available, skipping NL2SH-ALFA import")
+        return []
+
+    rows = load_dataset("westenfelder/NL2SH-ALFA", "train", split="train")
+    examples = []
+
+    for row in rows:
+        if row.get("difficulty", 0) > 1:
+            continue
+
+        instruction = str(row.get("nl", "")).strip()
+        command = normalize_shell_command(row.get("bash", ""))
+        if not instruction or not is_supported_external_command(command):
+            continue
+
+        add_example(examples, instruction, {"mode": "shell", "command": command})
+        if len(examples) >= limit:
+            break
+
+    print(f"Imported {len(examples)} filtered NL2SH-ALFA examples")
+    return examples
+
+
 def build_answer_examples():
     examples = []
     answers = [
@@ -311,6 +474,9 @@ def build_eval_examples():
         ("move to project folder and go into all subfolders and create a subfolder archive", {"mode": "shell", "command": recursive_subfolder_command("project", "archive")}),
         ("copy Dockerfile into every subfolder in projects", {"mode": "shell", "command": recursive_copy_command("projects", "Dockerfile")}),
         ("create the nested directory workspace/docs/drafts", {"mode": "shell", "command": 'mkdir -p "workspace/docs/drafts"'}),
+        ("move into the test directory and add a subdirectory called test5", plan_cd_then_shell("test", 'mkdir -p "test5"')),
+        ("go into the workspace directory and make a file called README.md", plan_cd_then_shell("workspace", 'touch "README.md"')),
+        ("change directory to service-a and start worker.py", plan_cd_then_shell("service-a", "python3 worker.py")),
         ("run worker.py", {"mode": "run_file", "command": "python3 worker.py"}),
         ("execute bundle.js with node", {"mode": "run_file", "command": "node bundle.js"}),
         ("create config.json inside billing", {"mode": "write_file", "path": "billing/config.json", "content": ""}),
@@ -322,7 +488,7 @@ def build_eval_examples():
     return examples
 
 
-def build_examples():
+def build_examples(include_nl2sh_alfa=False, nl2sh_limit=3000):
     examples = []
     for builder in [
         build_shell_alias_examples,
@@ -331,12 +497,18 @@ def build_examples():
         build_batch_structure_examples,
         build_file_examples,
         build_run_examples,
+        build_move_examples,
         build_compile_examples,
         build_parametric_examples,
         build_multi_step_examples,
+        build_plan_examples,
         build_answer_examples,
     ]:
         examples.extend(builder())
+
+    if include_nl2sh_alfa:
+        examples.extend(build_external_nl2sh_alfa_examples(nl2sh_limit))
+
     return dedupe_and_sort(examples)
 
 
@@ -344,7 +516,7 @@ def write_outputs(examples, eval_examples):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     payload = {
-        "format": "delphi-command-dataset-v3",
+        "format": "delphi-command-dataset-v4",
         "count": len(examples),
         "records": examples,
     }
@@ -368,8 +540,12 @@ def write_outputs(examples, eval_examples):
         )
 
 
-def main():
-    examples = build_examples()
+def main(argv=None):
+    args = parse_args(argv)
+    examples = build_examples(
+        include_nl2sh_alfa=args.include_nl2sh_alfa,
+        nl2sh_limit=args.nl2sh_limit,
+    )
     eval_examples = build_eval_examples()
     write_outputs(examples, eval_examples)
     print(f"Wrote {len(examples)} examples to {JSON_PATH}")

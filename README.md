@@ -58,6 +58,15 @@ Here is what I have currently to run the model alone:
 {"mode":"shell","command":"ls"}
 ```
 
+
+Current Examples:
+```bssh
+copy test.py into all folders in test
+"go into the test directory and make a file called config.json
+
+
+```
+
 TODO:
 Add widows specific model/training 
 make sure it is cross platform
@@ -78,4 +87,19 @@ rm
 overwriting files
 recursive moves
 package install
+
+
+Issues I encountered:
+General training was dificult with the model not being accuracte for a while
+Speed of requests I used to call
+```
+tokenizer = GPT2TokenizerFast.from_pretrained(str(MODEL_DIR))
+model = GPT2LMHeadModel.from_pretrained(str(MODEL_DIR))
+```
+every shell request which cased a lot of latency because it reloads the tokenizer and model every request
+
+Citations:
+
+[Natural Language to Bash](https://arxiv.org/pdf/2502.06858)
+
 
