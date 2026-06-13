@@ -1,10 +1,12 @@
 # DelphiShell
-AI integrated shell for interacting with DelphiOS
-This is the shell component of DelphiOS an local AI integrated operating system.
+AI-integrated shell for interacting with DelphiOS
+This is the shell component of DelphiOS, a local AI-integrated operating system.
+Delphi Shell is a standalone C-based shell, with the ability to act as a natural language to bash command translator. 
+This translation aids in bash development or allows for users who may not know how to use shell commands to interact with the shell.
 
 Notes: 
-- Developing in linux, however using the makefile in the windows section it should still work. 
-- Transformer architecture is running on CPU will add GPU compatibility soon. 
+- Developing in linux, however, using the makefile in the windows section it should still work. 
+
 
 
 ## To run and compile:
